@@ -1,0 +1,12 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    // shadcn CLI가 .wxt/tsconfig.json의 "../*"를 프로젝트 상위 폴더로 잘못 해석하므로 루트 기준으로 재정의
+    "paths": {
+      "@/*": ["./*"],
+      "~/*": ["./*"]
+    }
+  }
+}
