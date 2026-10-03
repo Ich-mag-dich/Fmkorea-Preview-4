@@ -25,10 +25,7 @@ function PostView({
   post: PostData;
   onVote?: (type: CommentVoteType) => void;
 }) {
-  const contentHtml = useMemo(
-    () => sanitizeHtml(post.content),
-    [post.content],
-  );
+  const contentHtml = useMemo(() => sanitizeHtml(post.content), [post.content]);
 
   return (
     <article className="flex flex-col">
@@ -67,7 +64,7 @@ function PostView({
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
 
-      <div className="flex items-center justify-center gap-3 border-y py-6">
+      <div className="flex items-center justify-center gap-3 py-6">
         <Button
           variant="outline"
           className="text-blue-600 dark:text-blue-400"
