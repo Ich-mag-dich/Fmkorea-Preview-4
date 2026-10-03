@@ -31,12 +31,13 @@ function CommentItem({
       // 부모 댓글 링크(a.findParent) 클릭 시 스크롤 대상. 상단 베스트 사본은 제외
       data-comment-id={comment.isBest ? undefined : comment.id}
       className={cn(
-        "flex flex-col gap-1.5 border-r-2 border-b-2 border-l-2 px-6 py-5",
+        "flex flex-col gap-1.5 border-x-2 border-y px-6 py-5",
         comment.depth > 0 && "border-l-3 pl-6",
-        comment.isBest && "rounded-md bg-blue-50 px-6 dark:bg-blue-500/10",
+        comment.isBest && "bg-blue-50 px-6 dark:bg-blue-500/10",
+        comment.divider && "mt-4",
       )}
       style={{ marginLeft: `${comment.depth * 1.25}rem` }}>
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+      <div className="flex flex-wrap items-center gap-x-2 text-xs">
         {comment.isBest && (
           <span className="rounded bg-blue-500 px-1.5 py-0.5 text-[10px] leading-none font-bold text-white">
             BEST

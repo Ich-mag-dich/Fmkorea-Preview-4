@@ -140,6 +140,7 @@ export const parseComment = (
           isWriter: contentWrap?.classList.contains("document_writer") ?? false,
           // 대댓글은 style="margin-left:2%", 한 단계 깊어질 때마다 2%씩 증가
           depth: Math.round((parseFloat(li.style.marginLeft) || 0) / 2),
+          divider: li.classList.contains("comment_border"),
         },
       ];
     }),

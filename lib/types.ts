@@ -13,6 +13,9 @@ export interface CommentData {
   isWriter: boolean;
   /** 대댓글 깊이. 0 = 일반 댓글, 1 = 대댓글, 2 = 대대댓글 ... */
   depth: number;
+
+  // best 댓글과 일반 댓글을 구분하는 구분선 여부
+  divider: boolean;
 }
 
 export interface MemberPopup {
