@@ -8,6 +8,7 @@ import type { CommentData, CommentVoteType } from "@/lib/types";
 // 댓글 본문도 fmkorea HTML이라 하위 태그 선택자로 스타일링
 const contentClassName = cn(
   "text-sm leading-relaxed break-words",
+  "[&_*]:max-w-full",
   "[&_a]:text-blue-600 [&_a]:underline dark:[&_a]:text-blue-400",
   "[&_a.findParent]:mr-1 [&_a.findParent]:font-semibold [&_a.findParent]:no-underline",
   "[&_img]:my-2 [&_img]:h-auto [&_img]:max-w-[min(400px,100%)] [&_img]:rounded-md",

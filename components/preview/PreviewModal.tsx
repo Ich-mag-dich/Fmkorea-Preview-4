@@ -66,7 +66,9 @@ function PreviewModal({
         initialFocus={popupRef}
         container={portalContainer}
         scrollOutside
-        className="gap-0 p-8 shadow-2xl ring-0 sm:max-w-5xl">
+        // grid-cols-[minmax(0,1fr)]: grid 자식은 기본 min-width:auto라 본문에 넓은 요소가 하나만 있어도
+        // 열 전체가 넓어져서 모든 줄이 창 밖으로 튀어나감. 열 너비를 창 너비로 고정
+        className="grid-cols-[minmax(0,1fr)] gap-0 p-8 shadow-2xl ring-0 sm:max-w-5xl">
         {isPending ? (
           <PreviewSkeleton />
         ) : isError ? (

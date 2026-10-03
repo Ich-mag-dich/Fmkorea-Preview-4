@@ -9,6 +9,8 @@ import type { CommentVoteType, PostData } from "@/lib/types";
 // 본문은 fmkorea가 준 HTML이라 Tailwind 클래스를 직접 못 붙이므로 하위 태그 선택자로 스타일링
 const contentClassName = cn(
   "min-h-60 px-6 py-6 text-[15px] leading-relaxed break-words",
+  // style="width:900px" 같은 고정 너비 요소가 창을 넘지 않게. img는 아래 규칙이 더 구체적이라 그쪽이 적용됨
+  "[&_*]:max-w-full",
   "[&_p]:my-2",
   "[&_a]:text-blue-600 [&_a]:underline dark:[&_a]:text-blue-400",
   "[&_img]:mx-auto [&_img]:my-3 [&_img]:h-auto [&_img]:max-w-[min(600px,100%)] [&_img]:rounded-md",
