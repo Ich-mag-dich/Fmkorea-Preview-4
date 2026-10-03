@@ -5,6 +5,7 @@ import PostView from "./PostView";
 import CommentList from "./CommentList";
 import PreviewSkeleton from "./PreviewSkeleton";
 import PreviewError from "./PreviewError";
+import PreviewRemote from "./PreviewRemote";
 
 function PreviewModal({
   href,
@@ -22,6 +23,19 @@ function PreviewModal({
 }) {
   const { data, isPending, isError, isFetching, refetch } = usePost(href);
   const popupRef = useRef<HTMLDivElement>(null);
+  const commentsRef = useRef<HTMLDivElement>(null);
+
+  // scrollOutside 모드라 실제로 스크롤되는 건 창을 감싼 Viewport
+  const getViewport = () =>
+    popupRef.current?.closest('[data-slot="dialog-viewport"]');
+  const scrollToTop = () =>
+    getViewport()?.scrollTo({ top: 0, behavior: "smooth" });
+  const scrollToBottom = () => {
+    const viewport = getViewport();
+    viewport?.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+  };
+  const scrollToComments = () =>
+    commentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   // 미리보기 중엔 탭 제목을 게시글 제목으로, 닫히거나 다른 글로 바뀌면 원래대로.
   // 닫힘 애니메이션을 기다리지 않고 닫기 시작할 때 바로 되돌림
@@ -60,12 +74,19 @@ function PreviewModal({
         ) : (
           <>
             <PostView post={data.PostData} />
-            <CommentList
-              comments={data.CommentData}
-              commentCount={data.commentCount}
-            />
+            <div ref={commentsRef}>
+              <CommentList
+                comments={data.CommentData}
+                commentCount={data.commentCount}
+              />
+            </div>
           </>
         )}
+        <PreviewRemote
+          onTop={scrollToTop}
+          onComments={data ? scrollToComments : undefined}
+          onBottom={scrollToBottom}
+        />
       </DialogContent>
     </Dialog>
   );
