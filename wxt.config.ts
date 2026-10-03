@@ -20,19 +20,29 @@ const shadowDomPropertyFallback: Plugin = {
       });
       if (initialValue === undefined) return;
 
-      const decl = new Declaration({ prop: atRule.params.trim(), value: initialValue });
+      // source가 없으면 Vite가 "did not pass the `from` option" 경고를 낸다
+      const decl = new Declaration({
+        prop: atRule.params.trim(),
+        value: initialValue,
+        source: atRule.source,
+      });
       (inherits ? inherited : nonInherited).push(decl);
     });
 
     if (inherited.length === 0 && nonInherited.length === 0) return;
 
-    const layer = new AtRule({ name: "layer", params: "properties" });
+    const source = root.source;
+    const layer = new AtRule({ name: "layer", params: "properties", source });
     if (inherited.length > 0) {
-      layer.append(new Rule({ selector: ":host", nodes: inherited }));
+      layer.append(new Rule({ selector: ":host", nodes: inherited, source }));
     }
     if (nonInherited.length > 0) {
       layer.append(
-        new Rule({ selector: ":host, *, ::before, ::after, ::backdrop", nodes: nonInherited }),
+        new Rule({
+          selector: ":host, *, ::before, ::after, ::backdrop",
+          nodes: nonInherited,
+          source,
+        }),
       );
     }
     root.append(layer);
@@ -48,9 +58,19 @@ export default defineConfig({
       postcss: { plugins: [shadowDomPropertyFallback] },
     },
   }),
-  manifest: {
+  manifest: ({ browser }) => ({
     name: "Fmkorea preview - 에펨코리아 게시글 미리보기",
     permissions: ["storage"],
     host_permissions: ["https://www.fmkorea.com/*"],
-  },
+    ...(browser === "firefox" && {
+      browser_specific_settings: {
+        gecko: {
+          // Firefox MV3 필수. AMO에 한 번 올리면 바꿀 수 없음
+          id: "fmkorea-preview@ich-mag-dich",
+          // 개발자 서버로 수집/전송하는 데이터 없음
+          data_collection_permissions: { required: ["none"] },
+        },
+      },
+    }),
+  }),
 });
