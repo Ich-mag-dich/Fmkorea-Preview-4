@@ -4,6 +4,12 @@
 
 [Chrome Web Store에서 설치하기](https://chromewebstore.google.com/detail/fmkorea-preview-%EC%97%90%ED%8E%A8%EC%BD%94%EB%A6%AC%EC%95%84-%EA%B2%8C%EC%8B%9C%EA%B8%80/bboddojafohhhnbdifnlmmmbfngjldhf?authuser=0&hl=ko)
 
+![미리보기1](./images/output.webp)
+
+![미리보기2](./images/ss1.png)
+
+![미리보기3](./images/ss2.png)
+
 ## 사용법
 
 | 동작                   | 결과                    |

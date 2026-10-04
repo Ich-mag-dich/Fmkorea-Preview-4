@@ -77,4 +77,5 @@ export default defineConfig({
       },
     }),
   }),
+  zip: { excludeSources: ["images/**"] },
 });
