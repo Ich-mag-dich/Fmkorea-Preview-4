@@ -1,5 +1,6 @@
 import { getDocumentSrl, urls } from "./api/urls";
 import { absolutizeMedia, cleanContent } from "./media";
+import { prepareEmbeds } from "./embed";
 import type { CommentData, PostData } from "./types";
 
 /**
@@ -55,10 +56,21 @@ export const fixIconUrl = (src: string | null | undefined): string => {
   return src;
 };
 
+const COMMENTS_PER_PAGE = 100;
+
+export const parseCommentCount = (doc: Document): number => {
+  const count =
+    Array.from(doc.querySelectorAll("div.side.fr span b"))
+      .at(-1)
+      ?.textContent?.trim() ?? "0";
+  return parseInt(count.replace(/,/g, "")) || 0;
+};
+
 export const parsePagination = (
   doc: Document,
 ): { currentPage: number; totalPages: number } => {
   const allPgDivs = Array.from(doc.querySelectorAll(".bd_pg"));
+
   const pgDiv =
     allPgDivs.find(
       div =>
@@ -67,15 +79,21 @@ export const parsePagination = (
           a.getAttribute("href")?.includes("cpage="),
         ),
     ) ?? null;
+
   if (!pgDiv) return { currentPage: 1, totalPages: 1 };
 
   const currentPage =
     parseInt(pgDiv.querySelector("strong.this")?.textContent?.trim() ?? "1") ||
     1;
+
   const nums = Array.from(pgDiv.querySelectorAll("a:not(.direction)"))
     .map(a => parseInt(a.textContent?.trim() ?? ""))
     .filter(n => !isNaN(n) && n > 0);
-  const totalPages = Math.max(...nums, currentPage);
+
+  const byCount = Math.ceil(parseCommentCount(doc) / COMMENTS_PER_PAGE);
+
+  const totalPages = Math.max(byCount, ...nums, currentPage);
+
   return { currentPage, totalPages };
 };
 
@@ -88,11 +106,8 @@ export const parsePagination = (
 export const parseComment = (
   doc: Document,
 ): { comments: CommentData[]; commentCount: number } => {
-  const count =
-    Array.from(doc.querySelectorAll("div.side.fr span b"))
-      ?.at(-1)
-      ?.textContent?.trim() ?? "0";
-  const commentCount = parseInt(count) || 0;
+  const commentCount = parseCommentCount(doc);
+
   const items = doc.querySelectorAll<HTMLLIElement>("ul.fdb_lst_ul > li");
   return {
     comments: Array.from(items).flatMap((li): CommentData[] => {
@@ -108,6 +123,7 @@ export const parseComment = (
           .querySelectorAll("a[onclick]")
           .forEach(a => a.removeAttribute("onclick"));
         contentEl.querySelector("span.imagecon-buy-icon")?.remove();
+        prepareEmbeds(contentEl);
       }
 
       const memberPlate = li.querySelector(".member_plate");
@@ -136,7 +152,9 @@ export const parseComment = (
               li.querySelector(".blamed_count")?.textContent?.trim() ?? "0",
             ) || 0,
           isReply: li.classList.contains("re"),
-          isBest: li.classList.contains("comment_best"),
+          // comment_best 클래스는 일반 위치의 원본에도 붙어 있어(같은 id로 key 중복 발생)
+          // 상단 사본 구분은 id 끝의 _로 함
+          isBest: li.id.endsWith("_"),
           isWriter: contentWrap?.classList.contains("document_writer") ?? false,
           // 대댓글은 style="margin-left:2%", 한 단계 깊어질 때마다 2%씩 증가
           depth: Math.round((parseFloat(li.style.marginLeft) || 0) / 2),
@@ -165,15 +183,12 @@ export const parsePost = (url: string, doc: Document): PostData => {
     const docHref = (
       doc.querySelector("div.document_address > a") as HTMLAnchorElement
     ).href;
-    const extracted = docHref
-      .replace(`${urls.BASE_URL}/`, "")
-      .replace("best/", "")
-      .match(/^(\d+)/)?.[1];
+    const extracted = getDocumentSrl(docHref);
     if (extracted) docId = extracted;
   } catch {}
 
   if (docId) {
-    const voteBtn = doc.querySelector(`#fm_vote${docId}`);
+    const voteBtn = doc.querySelector(`span.vote`);
     voteRid =
       voteBtn?.getAttribute("data-rid") ?? voteBtn?.getAttribute("rid") ?? "";
   }
@@ -214,10 +229,7 @@ export const parsePost = (url: string, doc: Document): PostData => {
         .replace(/\s+/g, " ") ?? "",
     docId: getDocumentSrl(url) ?? "",
     url,
-    mid:
-      doc.querySelector<HTMLInputElement>("input[name='mid']")?.value ??
-      url.match(/fmkorea\.com\/(?:best\/)?([a-z_]+)\//)?.[1] ??
-      "",
+    mid: doc.querySelector<HTMLInputElement>("input[name='mid']")?.value ?? "",
 
     voteCount:
       parseInt(

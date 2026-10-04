@@ -1,18 +1,41 @@
+const BASE_URL = "https://www.fmkorea.com";
+
+const indexUrl = (params: Record<string, string>) =>
+  `${BASE_URL}/index.php?${new URLSearchParams(params)}`;
+
 export const urls = {
-  BASE_URL: "https://www.fmkorea.com",
+  BASE_URL,
+  messageIcon: `${BASE_URL}/modules/communication/tpl/images/icon_write_message.gif`,
+  memberInfoIcon: `https://static.fmkorea.com/modules/member/tpl/images/icon_view_info.gif`,
+  writtenIcon: `https://www.fmkorea.com/modules/member/tpl/images/icon_view_written.gif`,
+  blindIcon: `https://www.fmkorea.com/modules/blind/tpl/icon_blind.gif`,
+
+  sendMessage: (receiverSrl: string) =>
+    indexUrl({
+      module: "communication",
+      act: "dispCommunicationSendMessage",
+      receiver_srl: receiverSrl,
+    }),
+
+  memberInfo: ({ mid, memberSrl }: { mid: string; memberSrl: string }) =>
+    indexUrl({ mid, act: "dispMemberInfo", member_srl: memberSrl }),
+
+  writtenArticles: ({ mid, memberSrl }: { mid: string; memberSrl: string }) =>
+    indexUrl({ mid, search_target: "member_srl", search_keyword: memberSrl }),
 };
 
 /**
  * 게시글 URL에서 글 번호(document_srl)를 추출
  * - https://www.fmkorea.com/10409551104
  * - https://www.fmkorea.com/best/10409551104
+ * - https://www.fmkorea.com/best2/10409551104
  * - https://www.fmkorea.com/index.php?mid=...&document_srl=10409551104
  */
 export const getDocumentSrl = (url: string): string | undefined => {
   const { pathname, searchParams } = new URL(url, urls.BASE_URL);
   return (
     searchParams.get("document_srl") ??
-    pathname.match(/^\/(?:best\/)?(\d+)/)?.[1]
+    pathname.match(/^\/(?:best\d*\/)?(\d+)/)?.[1]
   );
 };
 
@@ -25,4 +48,10 @@ export const toCanonicalPostUrl = (url: string): string => {
   const cpage = new URL(url, urls.BASE_URL).searchParams.get("cpage");
   if (cpage) canonical.searchParams.set("cpage", cpage);
   return canonical.href;
+};
+
+export const withCommentPage = (url: string, cpage: number): string => {
+  const u = new URL(toCanonicalPostUrl(url));
+  u.searchParams.set("cpage", String(cpage));
+  return u.href;
 };
