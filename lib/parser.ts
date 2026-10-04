@@ -1,4 +1,4 @@
-import { urls } from "./api/urls";
+import { getDocumentSrl, urls } from "./api/urls";
 import { absolutizeMedia, cleanContent } from "./media";
 import type { CommentData, PostData } from "./types";
 
@@ -159,7 +159,7 @@ export const parsePost = (url: string, doc: Document): PostData => {
   const authorPlate = doc.querySelector(".member_plate");
   const pagination = parsePagination(doc);
   let voteRid = "";
-  let docId = url.match(/\/(\d+)(?:\/|\?|$)/)?.[1] ?? "";
+  let docId = getDocumentSrl(url) ?? "";
 
   try {
     const docHref = (
@@ -212,7 +212,7 @@ export const parsePost = (url: string, doc: Document): PostData => {
         .querySelector("div.side.fr")
         ?.textContent?.trim()
         .replace(/\s+/g, " ") ?? "",
-    docId: url.match(/\/(\d+)(?:\/|\?|$)/)?.[1] ?? "",
+    docId: getDocumentSrl(url) ?? "",
     url,
     mid:
       doc.querySelector<HTMLInputElement>("input[name='mid']")?.value ??
