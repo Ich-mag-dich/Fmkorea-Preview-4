@@ -15,7 +15,17 @@ export default defineContentScript({
       position: "overlay",
       zIndex: 2147483647,
       onMount: (container, shadow) => {
-        const queryClient = new QueryClient();
+        const queryClient = new QueryClient({
+          defaultOptions: {
+            queries: {
+              // 글 하나를 받으면 HTML 전체를 다시 파싱하므로, 창 포커스/재마운트마다
+              // 다시 받지 않게. 추천/댓글/블라인드 후엔 invalidate로 직접 갱신함
+              staleTime: 60_000,
+              refetchOnWindowFocus: false,
+              retry: 1,
+            },
+          },
+        });
         const root = ReactDOM.createRoot(container);
         // shadow root를 넘겨서 Dialog/Dropdown Portal이 이 안에 렌더링되게
         root.render(
