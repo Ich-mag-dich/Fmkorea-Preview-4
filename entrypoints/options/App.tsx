@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Slider } from "@base-ui/react/slider";
 import {
   CheckIcon,
-  ChevronRightIcon,
   RotateCcwIcon,
   Volume1Icon,
   Volume2Icon,
