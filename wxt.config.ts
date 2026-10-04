@@ -60,8 +60,12 @@ export default defineConfig({
   }),
   manifest: ({ browser }) => ({
     name: "Fmkorea preview - 에펨코리아 게시글 미리보기",
+    icons: {
+      "128": "/icon/128.png",
+    },
     permissions: ["storage"],
     host_permissions: ["https://www.fmkorea.com/*"],
+    description: "에펨코리아 게시글 미리보기 확장 기능",
     ...(browser === "firefox" && {
       browser_specific_settings: {
         gecko: {
