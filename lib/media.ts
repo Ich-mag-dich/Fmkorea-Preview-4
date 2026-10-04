@@ -1,19 +1,8 @@
 import { urls } from "./api/urls";
+import { prepareEmbeds } from "./embed";
 
-const DEFAULT_VIDEO_VOLUME = 0.5;
-const VIDEO_VOLUME_STORAGE_KEY = "fmk_preview_video_volume";
-
-let cachedVideoVolume = DEFAULT_VIDEO_VOLUME;
-
-/**
- * 비디오 요소에 기본 볼륨 값을 적용
- *
- * @param video 볼륨을 적용할 비디오 요소
- */
-export const applyDefaultVideoVolume = (video: HTMLVideoElement) => {
-  video.volume = cachedVideoVolume;
-};
-
+// 볼륨은 여기서 넣어도 HTML 문자열로 바뀌면서 사라지므로
+// 실제로 그려진 뒤 preview.content/App.tsx에서 적용함
 const cleanVideoWrappers = (root: Element) => {
   root.querySelectorAll(".height_keep").forEach(wrapper => {
     const video = wrapper.querySelector("video");
@@ -39,24 +28,9 @@ const cleanVideoWrappers = (root: Element) => {
       newVid.muted = true;
     }
 
-    applyDefaultVideoVolume(newVid);
-
     wrapper.replaceWith(newVid);
   });
 };
-
-/**
- * 비디오 볼륨 값을 정규화하여 0과 1 사이의 유효한 값으로 변환
- *
- * 유효하지 않은 값이 들어오면 기본 볼륨 값을 반환
- *
- * @param value 비디오 볼륨 값
- * @returns 0과 1 사이의 유효한 비디오 볼륨 값
- */
-const normalizeVideoVolume = (value: unknown) =>
-  typeof value === "number" && value >= 0 && value <= 1
-    ? value
-    : DEFAULT_VIDEO_VOLUME;
 
 /**
  * 상대 경로로 된 URL을 절대 경로로 변환
@@ -82,6 +56,8 @@ export const absolutizeMedia = (root: Element): void => {
       img.getAttribute("data-original") ?? img.getAttribute("data-src");
     if (orig) img.setAttribute("src", orig);
     fixAttr(img, "src");
+    img.setAttribute("loading", "lazy");
+    img.setAttribute("decoding", "async");
   });
   root.querySelectorAll("source").forEach(s => fixAttr(s, "src"));
 };
@@ -104,5 +80,5 @@ export const cleanContent = (root: Element) => {
   absolutizeMedia(root);
   cleanVideoWrappers(root);
   root.innerHTML = root.innerHTML.replace(/<!--[\s\S]*?-->/g, "");
-  // embedMedia(root);
+  prepareEmbeds(root);
 };

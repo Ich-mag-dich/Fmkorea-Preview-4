@@ -1,10 +1,10 @@
-import { useMemo } from "react";
 import { ThumbsDownIcon, ThumbsUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { sanitizeHtml } from "@/lib/sanitize";
-import type { CommentVoteType, PostData } from "@/lib/types";
+import type { VoteType, PostData } from "@/lib/types";
+import AuthorMenu from "./AuthorMenu";
+import RichContent from "./RichContent";
 
 // 본문은 fmkorea가 준 HTML이라 Tailwind 클래스를 직접 못 붙이므로 하위 태그 선택자로 스타일링
 const contentClassName = cn(
@@ -23,10 +23,8 @@ function PostView({
   onVote,
 }: {
   post: PostData;
-  onVote?: (type: CommentVoteType) => void;
+  onVote?: (type: VoteType) => void;
 }) {
-  const contentHtml = useMemo(() => sanitizeHtml(post.content), [post.content]);
-
   return (
     <article className="flex flex-col">
       {/* pr-8: DialogContent 우상단 X 버튼과 겹치지 않게 */}
@@ -35,7 +33,11 @@ function PostView({
           {post.title}
         </DialogTitle>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-center text-sm text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5 text-foreground">
+          <AuthorMenu
+            memberSrl={post.authorMemberSrl}
+            mid={post.mid}
+            docId={post.docId}
+            className="inline-flex items-center gap-1.5 text-foreground">
             {post.authorLevelIcon && (
               <img
                 src={post.authorLevelIcon}
@@ -51,7 +53,7 @@ function PostView({
               />
             )}
             {post.author}
-          </span>
+          </AuthorMenu>
           <div className="flex gap-3">
             {post.date && <span>{post.date}</span>}
             {post.views && <span>{post.views}</span>}
@@ -59,10 +61,7 @@ function PostView({
         </div>
       </header>
 
-      <div
-        className={contentClassName}
-        dangerouslySetInnerHTML={{ __html: contentHtml }}
-      />
+      <RichContent html={post.content} className={contentClassName} />
 
       <div className="flex items-center justify-center gap-3 py-6">
         <Button
