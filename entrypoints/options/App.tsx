@@ -241,7 +241,7 @@ function VideoVolumeSetting() {
   return (
     <Card
       title="영상 기본 볼륨"
-      description="미리보기 속 영상이 처음 재생될 때의 볼륨입니다. 재생 중에 바꾼 볼륨은 그 영상에만 적용돼요.">
+      description="미리보기 속 영상이 처음 재생될 때의 볼륨입니다. 영상을 보다가 볼륨을 바꾸면 이 값도 함께 바뀌어 다음 영상에 적용돼요.">
       <div className="flex items-end justify-between">
         <span className="flex items-center gap-2 text-3xl font-bold tabular-nums">
           <VolumeIcon className="size-7 text-muted-foreground" />

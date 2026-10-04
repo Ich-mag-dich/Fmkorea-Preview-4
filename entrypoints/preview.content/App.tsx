@@ -48,6 +48,29 @@ function App({ portalContainer }: { portalContainer: HTMLElement }) {
       portalContainer.removeEventListener("loadedmetadata", onLoaded, true);
   }, [portalContainer]);
 
+  // 재생 중에 바꾼 볼륨을 설정값으로 저장해서 다음 영상에도 적용.
+  // 볼륨 바를 끄는 동안 이벤트가 계속 나오고 sync 저장소는 분당 쓰기 제한이 있어서,
+  // 조절이 멈춘 뒤 한 번만 저장
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const onVolumeChange = (e: Event) => {
+      const video = e.target;
+      if (!(video instanceof HTMLVideoElement)) return;
+      // 음소거 버튼은 볼륨 값을 바꾸지 않으므로 저장하지 않음 (자동 재생 무음 영상 포함)
+      if (video.muted) return;
+      // 위에서 처음 볼륨을 넣을 때도 이 이벤트가 나므로, 설정값과 같으면 무시
+      if (Math.abs(video.volume - videoVolumeRef.current) < 0.005) return;
+      const volume = Math.round(video.volume * 100) / 100;
+      clearTimeout(timer);
+      timer = setTimeout(() => videoVolumeItem.setValue(volume), 500);
+    };
+    portalContainer.addEventListener("volumechange", onVolumeChange, true);
+    return () => {
+      clearTimeout(timer);
+      portalContainer.removeEventListener("volumechange", onVolumeChange, true);
+    };
+  }, [portalContainer]);
+
   // 닫는 중(href=null)에도 닫힘 애니메이션이 끝날 때까지 마지막 글을 계속 렌더링
   const [renderedHref, setRenderedHref] = useState(href);
   if (href && href !== renderedHref) setRenderedHref(href);
