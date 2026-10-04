@@ -1,29 +1,34 @@
-import { useEffect, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { usePortalContainer } from "@/hooks/use-portal-container";
 import { usePost } from "@/hooks/use-post";
+import { useVotePost } from "@/hooks/use-vote-post";
+import { useStorageItem } from "@/hooks/use-storage-item";
+import { previewWidthItem } from "@/lib/settings";
+import { useEffect, useRef, type CSSProperties } from "react";
+import CommentSection from "./CommentSection";
 import PostView from "./PostView";
-import CommentList from "./CommentList";
-import PreviewSkeleton from "./PreviewSkeleton";
 import PreviewError from "./PreviewError";
 import PreviewRemote from "./PreviewRemote";
+import PreviewSkeleton from "./PreviewSkeleton";
 
 function PreviewModal({
   href,
   open,
-  portalContainer,
   onClose,
   onClosed,
 }: {
   href: string;
   open: boolean;
-  portalContainer: HTMLElement;
   onClose: () => void;
   /** 닫힘 애니메이션까지 끝난 뒤 호출 */
   onClosed: () => void;
 }) {
+  const portalContainer = usePortalContainer();
   const { data, isPending, isError, isFetching, refetch } = usePost(href);
   const popupRef = useRef<HTMLDivElement>(null);
   const commentsRef = useRef<HTMLDivElement>(null);
+  const vote = useVotePost(href);
+  const [previewWidth] = useStorageItem(previewWidthItem);
 
   // scrollOutside 모드라 실제로 스크롤되는 건 창을 감싼 Viewport
   const getViewport = () =>
@@ -68,18 +73,32 @@ function PreviewModal({
         scrollOutside
         // grid-cols-[minmax(0,1fr)]: grid 자식은 기본 min-width:auto라 본문에 넓은 요소가 하나만 있어도
         // 열 전체가 넓어져서 모든 줄이 창 밖으로 튀어나감. 열 너비를 창 너비로 고정
-        className="grid-cols-[minmax(0,1fr)] gap-0 p-8 shadow-2xl ring-0 sm:max-w-5xl">
+        // 최대 너비는 옵션 페이지에서 설정. 화면이 더 좁으면 w-full이라 화면에 맞춰짐
+        style={{ "--preview-width": `${previewWidth}px` } as CSSProperties}
+        className="grid-cols-[minmax(0,1fr)] gap-0 p-8 shadow-2xl ring-0 sm:max-w-(--preview-width)">
         {isPending ? (
           <PreviewSkeleton />
         ) : isError ? (
           <PreviewError href={href} onRetry={refetch} retrying={isFetching} />
         ) : (
           <>
-            <PostView post={data.PostData} />
+            <PostView
+              post={data.PostData}
+              onVote={type => vote.mutate({ post: data.PostData, type })}
+            />
             <div ref={commentsRef}>
-              <CommentList
-                comments={data.CommentData}
-                commentCount={data.commentCount}
+              <CommentSection
+                key={href} // 다른 글을 열면 page 상태 초기화
+                href={href}
+                mid={data.PostData.mid}
+                docId={data.PostData.docId}
+                initial={{
+                  comments: data.CommentData,
+                  commentCount: data.commentCount,
+                  currentPage: data.PostData.commentPage,
+                  totalPages: data.PostData.totalCommentPages,
+                }}
+                onPageChange={scrollToComments}
               />
             </div>
           </>

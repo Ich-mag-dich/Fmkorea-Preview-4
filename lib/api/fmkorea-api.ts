@@ -1,7 +1,10 @@
-import { parseComment, parsePost } from "../parser";
-import type { PostData } from "../types";
+import { parseComment, parsePagination, parsePost } from "../parser";
+import type { BlindType, PostData, VoteResult, VoteType } from "../types";
 import { type CommentData } from "./../types";
-import { toCanonicalPostUrl } from "./urls";
+import { toCanonicalPostUrl, urls, withCommentPage } from "./urls";
+
+const pageFetch: typeof fetch =
+  (globalThis as { content?: { fetch: typeof fetch } }).content?.fetch ?? fetch;
 
 /**
  * 주어진 URL의 게시글 데이터를 가져와 파싱하여 반환
@@ -26,4 +29,237 @@ export const fetchPost = async (
   const { comments: CommentData, commentCount } = parseComment(doc);
   const PostData = parsePost(postUrl, doc);
   return { PostData, CommentData, commentCount };
+};
+
+export const fetchComments = async (url: string, cpage: number) => {
+  const res = await fetch(withCommentPage(url, cpage));
+  const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+  const { comments, commentCount } = parseComment(doc);
+  const { currentPage, totalPages } = parsePagination(doc);
+  return { comments, commentCount, currentPage, totalPages };
+};
+
+export const voteDocument = async (
+  post: PostData,
+  type: VoteType,
+): Promise<VoteResult> => {
+  const act = type === "up" ? "procDocumentVoteUp" : "procDocumentVoteDown";
+  // 브라우저가 보내는 것과 같은 파라미터, 같은 순서
+  const params = new URLSearchParams({ target_srl: post.docId });
+  if (post.voteRid) params.set("rid", post.voteRid);
+  params.set("module", "document");
+  params.set("act", act);
+
+  const res = await pageFetch(`${urls.BASE_URL}/?act=${act}`, {
+    method: "POST",
+    headers: {
+      accept: "application/json, text/javascript, */*; q=0.01",
+      "content-type": "application/json",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    credentials: "include",
+    referrer: post.url, // 헤더로는 못 바꾸므로 옵션으로
+    body: params.toString(),
+  });
+
+  const data: VoteResult = await res.json();
+  console.log(data);
+
+  // 실패해도 HTTP 200에 error: -1로 오므로 직접 예외로 바꿔야 mutation의 onError로 감
+  if (data.error !== 0) throw new Error(data.message);
+  return data;
+};
+
+export const voteComment = async (
+  comment: CommentData,
+  type: VoteType,
+): Promise<VoteResult> => {
+  const act = type === "up" ? "procCommentVoteUp" : "procCommentVoteDown";
+  const params = new URLSearchParams({
+    target_srl: comment.id,
+    module: "comment",
+    act,
+  });
+
+  const res = await pageFetch(`${urls.BASE_URL}/?act=${act}`, {
+    method: "POST",
+    headers: {
+      accept: "application/json, text/javascript, */*; q=0.01",
+      "content-type": "application/json",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    credentials: "include",
+    body: params.toString(),
+  });
+
+  const data: VoteResult = await res.json();
+  console.log(data);
+
+  // 댓글 추천은 성공/취소/실패 모두 error: -2로 와서 여기서 예외로 바꾸지 않음.
+  // 성공 여부 판단은 useVoteComment에서 응답 필드로 함
+  return data;
+};
+
+const xmlBody = (params: Record<string, string>) =>
+  `<?xml version="1.0" encoding="utf-8" ?>\n<methodCall>\n<params>\n${Object.entries(
+    params,
+  )
+    .map(([k, v]) => `<${k}><![CDATA[${v}]]></${k}>`)
+    .join("\n")}\n</params>\n</methodCall>`;
+
+/** 해당 회원의 블라인드 상태. 로그인 안 했으면 항목이 없어서 undefined */
+export const fetchBlindStatus = async ({
+  memberSrl,
+  docId,
+  mid,
+}: {
+  memberSrl: string;
+  docId: string;
+  mid: string;
+}): Promise<Partial<Record<BlindType, boolean>>> => {
+  const res = await pageFetch(`${urls.BASE_URL}/index.php?act=getMemberMenu`, {
+    method: "POST",
+    headers: {
+      accept: "application/xml, text/xml, */*; q=0.01",
+      "content-type": "text/xml; charset=utf-8",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    credentials: "include",
+    referrer: `${urls.BASE_URL}/${docId}`,
+    body: xmlBody({
+      document_srl: docId,
+      target_srl: memberSrl,
+      cur_mid: mid,
+      mid,
+      cur_act: "",
+      menu_id: `member_${memberSrl}`,
+      page_x: "0",
+      page_y: "0",
+      module: "member",
+      act: "getMemberMenu",
+    }),
+  });
+  const xml = new DOMParser().parseFromString(await res.text(), "text/xml");
+  if (xml.querySelector("parsererror")) {
+    throw new Error("회원 메뉴 응답을 해석하지 못했습니다");
+  }
+
+  // 블라인드 항목은 상태에 따라 두 형식으로 옴
+  // - 아무것도 안 했을 때: blind_click(this, srl, 2, 'add') "블라인드" 하나
+  //   (둘 다 했을 때는 'cancel'로 올 것으로 추정, 아직 확인 못 함)
+  // - 하나만 했을 때: blind_click(this, srl, 0) 글·댓글 / (…, 1) 쪽지 두 개,
+  //   블라인드 중인 쪽은 라벨 끝에 "취소"
+  // 로그인 안 했거나 자기 자신이면 항목이 없어서 빈 객체
+  const status: Partial<Record<BlindType, boolean>> = {};
+  for (const item of xml.querySelectorAll("menus > item")) {
+    const [, kind, mode] =
+      item
+        .querySelector("url")
+        ?.textContent?.match(
+          /^blind_click\(this,\s*\d+,\s*(\d)(?:,\s*'(\w+)')?/,
+        ) ?? [];
+    if (kind === "2") {
+      const blinded = mode === "cancel";
+      status.default = blinded;
+      status.message = blinded;
+    } else if (kind === "0" || kind === "1") {
+      status[kind === "0" ? "default" : "message"] =
+        item.querySelector("str")?.textContent?.trim().endsWith("취소") ??
+        false;
+    }
+  }
+  return status;
+};
+
+export const blindMember = async ({
+  memberSrl,
+  docId,
+  mid,
+  type,
+  mode,
+  memo = "",
+}: {
+  memberSrl: string;
+  docId: string;
+  mid: string;
+  type: BlindType | "all";
+  mode: "add" | "cancel";
+  memo?: string;
+}) => {
+  const res = await pageFetch(`${urls.BASE_URL}/modules/blind/api.php`, {
+    method: "POST",
+    headers: {
+      accept: "application/json, text/javascript, */*; q=0.01",
+      "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    credentials: "include",
+    referrer: `${urls.BASE_URL}/${docId}`,
+    body: new URLSearchParams({
+      target_srl: memberSrl,
+      type,
+      mode,
+      memo,
+      target_document_srl: docId,
+      current_mid: mid,
+    }).toString(),
+  });
+  return res.json(); // 성공/실패 판단은 실제 응답 보고 결정
+};
+
+/** 입력한 텍스트를 use_html=Y 댓글 본문으로. 태그로 해석되지 않게 이스케이프하고 줄바꿈은 <br> */
+const toCommentHtml = (text: string) =>
+  text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;") // ]]>도 같이 막혀서 CDATA가 깨지지 않음
+    .replace(/\r?\n/g, "<br />");
+
+/**
+ * 댓글 작성. parentSrl을 주면 그 댓글에 대한 답글
+ * @returns 새 댓글의 comment_srl
+ */
+export const insertComment = async ({
+  mid,
+  docId,
+  content,
+  parentSrl,
+}: {
+  mid: string;
+  docId: string;
+  content: string;
+  parentSrl?: string;
+}): Promise<string> => {
+  const res = await pageFetch(
+    `${urls.BASE_URL}/write.php?act=procBoardInsertComment`,
+    {
+      method: "POST",
+      headers: {
+        accept: "application/xml, text/xml, */*; q=0.01",
+        "content-type": "text/xml; charset=UTF-8",
+        "x-requested-with": "XMLHttpRequest",
+      },
+      credentials: "include",
+      referrer: `${urls.BASE_URL}/${docId}`,
+      body: xmlBody({
+        _filter: "insert_comment",
+        mid,
+        document_srl: docId,
+        content: toCommentHtml(content),
+        ...(parentSrl && { parent_srl: parentSrl }),
+        use_html: "Y",
+        module: "board",
+        act: "procBoardInsertComment",
+      }),
+    },
+  );
+
+  const xml = new DOMParser().parseFromString(await res.text(), "text/xml");
+  const text = (tag: string) => xml.querySelector(tag)?.textContent?.trim();
+  const commentSrl = text("comment_srl");
+  if (text("error") !== "0" || !commentSrl) {
+    // 비로그인, 도배 방지 등은 message에 사유가 옴
+    throw new Error(text("message") || "댓글을 등록하지 못했습니다");
+  }
+  return commentSrl;
 };
