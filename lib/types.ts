@@ -18,13 +18,6 @@ export interface CommentData {
   divider: boolean;
 }
 
-export interface MemberPopup {
-  memberSrl: string;
-  author: string;
-  x: number;
-  y: number;
-}
-
 export interface PostData {
   title: string;
   /** 게시글 페이지의 <title>. 미리보기 중 브라우저 탭 제목으로 사용 */
