@@ -1,16 +1,33 @@
-import type { MouseEvent } from "react";
-import type { CommentData, CommentVoteType } from "@/lib/types";
+import { useState, type MouseEvent } from "react";
+import type { CommentData, VoteType } from "@/lib/types";
 import CommentItem from "./CommentItem";
+import CommentForm from "./CommentForm";
+
+// 베스트 댓글은 일반 위치에도 같은 id로 한 번 더 나오므로 key를 구분
+const itemKey = (comment: CommentData) =>
+  `${comment.isBest ? "best-" : ""}${comment.id}`;
 
 function CommentList({
   comments,
   commentCount,
+  mid,
+  docId,
   onVote,
+  onReply,
+  replyPending = false,
 }: {
   comments: CommentData[];
   commentCount: number;
-  onVote?: (type: CommentVoteType, id: string) => void;
+  mid: string;
+  docId: string;
+  onVote?: (type: VoteType, id: string) => void;
+  /** 답글 등록. 성공하면 true (입력창이 닫힘) */
+  onReply?: (parentSrl: string, content: string) => Promise<boolean>;
+  replyPending?: boolean;
 }) {
+  // 답글 입력창은 한 번에 하나만. id 대신 key로 잡아야 베스트 사본과 원본 양쪽에 같이 열리지 않음
+  const [replyingKey, setReplyingKey] = useState<string | null>(null);
+
   // 대댓글 앞의 부모 닉네임 링크(a.findParent, href="...#comment_ID")를 누르면
   // 페이지 이동 대신 미리보기 안의 해당 댓글로 스크롤
   const handleClick = (e: MouseEvent<HTMLElement>) => {
@@ -38,15 +55,43 @@ function CommentList({
           댓글이 없습니다. ;ㅅ;
         </p>
       ) : (
-        <ul className="flex flex-col divide-y">
-          {comments.map(comment => (
-            <CommentItem
-              // 베스트 댓글은 일반 위치에도 같은 id로 한 번 더 나오므로 key를 구분
-              key={`${comment.isBest ? "best-" : ""}${comment.id}`}
-              comment={comment}
-              onVote={onVote}
-            />
-          ))}
+        // 구분선은 CommentItem이 들여쓴 내용 쪽에만 그림 (가이드 라인을 가로지르지 않게)
+        <ul className="flex flex-col">
+          {comments.map(comment => {
+            const key = itemKey(comment);
+            const close = () => setReplyingKey(null);
+            return (
+              <CommentItem
+                key={key}
+                comment={comment}
+                mid={mid}
+                docId={docId}
+                onVote={onVote}
+                isReplying={replyingKey === key}
+                onReply={
+                  onReply &&
+                  (() => setReplyingKey(prev => (prev === key ? null : key)))
+                }
+                replyForm={
+                  onReply && (
+                    <CommentForm
+                      className="mt-2"
+                      title={`${comment.author}님에게 답글`}
+                      placeholder="답글을 입력하세요"
+                      autoFocus
+                      pending={replyPending}
+                      onCancel={close}
+                      onSubmit={async content => {
+                        const ok = await onReply(comment.id, content);
+                        if (ok) close();
+                        return ok;
+                      }}
+                    />
+                  )
+                }
+              />
+            );
+          })}
         </ul>
       )}
     </section>
