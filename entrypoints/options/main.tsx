@@ -1,6 +1,10 @@
-import React, { StrictMode } from "react";
-import ReactDOM, { createRoot } from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import App from "./App";
+import "./style.css";
+import { followSystemTheme } from "@/lib/system-theme";
+
+followSystemTheme();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
