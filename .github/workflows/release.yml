@@ -1,0 +1,72 @@
+# 원할 때 수동으로 실행해서 Chrome/Firefox용 zip을 빌드하고 GitHub 릴리즈에 올림
+# 태그는 package.json의 version으로 정해짐 (예: 4.0.1 → v4.0.1)
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      draft:
+        description: "초안으로 만들기 (확인한 뒤 직접 공개)"
+        type: boolean
+        default: false
+      prerelease:
+        description: "프리릴리즈로 표시"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # 태그와 릴리즈 생성
+
+# 실수로 두 번 눌러도 같은 버전 릴리즈가 동시에 만들어지지 않게
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Type check
+        run: bun run compile
+
+      - name: Read version
+        id: version
+        run: echo "tag=v$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Check tag is new
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
+            echo "::error::$TAG 태그가 이미 있습니다. package.json의 version을 올린 뒤 다시 실행해 주세요."
+            exit 1
+          fi
+
+      - name: Build zips
+        run: |
+          bun run zip
+          bun run zip:firefox
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        # 스토어 제출용 소스 zip(-sources.zip)은 올리지 않음
+        run: |
+          gh release create "$TAG" \
+            .output/*-chrome.zip \
+            .output/*-firefox.zip \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --generate-notes \
+            ${{ inputs.draft && '--draft' || '' }} \
+            ${{ inputs.prerelease && '--prerelease' || '' }}
