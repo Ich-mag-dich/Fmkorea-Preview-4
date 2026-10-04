@@ -1,8 +1,16 @@
 # Fmkorea Preview - 에펨코리아 게시글 미리보기
 
-에펨코리아(fmkorea.com) 게시글을 페이지 이동 없이 **우클릭 한 번으로 미리볼 수 있는** 브라우저 확장 프로그램입니다. Chrome과 Firefox를 지원합니다.
+에펨코리아(fmkorea.com) 게시글을 페이지 이동 없이 **우클릭 한 번으로 미리볼 수 있는** 브라우저 확장 프로그램입니다.
 
-[Chrome Web Store에서 설치하기](https://chromewebstore.google.com/detail/fmkorea-preview-%EC%97%90%ED%8E%A8%EC%BD%94%EB%A6%AC%EC%95%84-%EA%B2%8C%EC%8B%9C%EA%B8%80/bboddojafohhhnbdifnlmmmbfngjldhf?authuser=0&hl=ko)
+Chrome과 Firefox를 지원합니다.
+
+## 설치 링크
+
+- [Chrome Web Store](https://chromewebstore.google.com/detail/fmkorea-preview-%EC%97%90%ED%8E%A8%EC%BD%94%EB%A6%AC%EC%95%84-%EA%B2%8C%EC%8B%9C%EA%B8%80/bboddojafohhhnbdifnlmmmbfngjldhf?authuser=0&hl=ko)
+
+- [Firefox Add-ons](https://addons.mozilla.org/ko/firefox/addon/fmkorea-preview-%EC%97%90%ED%8E%A8%EC%BD%94%EB%A6%AC%EC%95%84-%EA%B2%8C%EC%8B%9C%EA%B8%80-%EB%AF%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0/)
+
+## 미리보기
 
 ![미리보기1](./images/output.webp)
 
