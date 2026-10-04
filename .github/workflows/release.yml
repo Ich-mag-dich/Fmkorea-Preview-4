@@ -1,18 +1,18 @@
-# 원할 때 수동으로 실행해서 Chrome/Firefox용 zip을 빌드하고 GitHub 릴리즈에 올림
+# 수동으로 실행해서 Chrome/Firefox용 zip을 빌드하고 GitHub 릴리즈에 올림
 # 태그는 package.json의 version으로 정해짐 (예: 4.0.1 → v4.0.1)
 name: Release
 
 on:
   workflow_dispatch:
     inputs:
-      draft:
-        description: "초안으로 만들기 (확인한 뒤 직접 공개)"
-        type: boolean
-        default: false
-      prerelease:
-        description: "프리릴리즈로 표시"
-        type: boolean
-        default: false
+      type:
+        description: "릴리즈 종류 (draft는 태그 없이 초안만 만들고, 공개할 때 태그가 생김)"
+        type: choice
+        options:
+          - release
+          - prerelease
+          - draft
+        default: release
 
 permissions:
   contents: write # 태그와 릴리즈 생성
@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # 이전 태그를 찾아 그 뒤 커밋으로 릴리즈 노트를 만들려면 전체 이력이 필요
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -56,17 +58,30 @@ jobs:
           bun run zip
           bun run zip:firefox
 
+      - name: Write release notes
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          bash .github/scripts/release-notes.sh "$TAG" \
+            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" > release-notes.md
+          cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
+          TYPE: ${{ inputs.type }}
         # 스토어 제출용 소스 zip(-sources.zip)은 올리지 않음
         run: |
+          flags=()
+          case "$TYPE" in
+            prerelease) flags+=(--prerelease) ;;
+            draft) flags+=(--draft) ;;
+          esac
           gh release create "$TAG" \
             .output/*-chrome.zip \
             .output/*-firefox.zip \
             --target "$GITHUB_SHA" \
             --title "$TAG" \
-            --generate-notes \
-            ${{ inputs.draft && '--draft' || '' }} \
-            ${{ inputs.prerelease && '--prerelease' || '' }}
+            --notes-file release-notes.md \
+            "${flags[@]}"
