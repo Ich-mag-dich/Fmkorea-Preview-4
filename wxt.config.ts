@@ -11,10 +11,10 @@ const shadowDomPropertyFallback: Plugin = {
     const inherited: Declaration[] = [];
     const nonInherited: Declaration[] = [];
 
-    root.walkAtRules("property", (atRule) => {
+    root.walkAtRules("property", atRule => {
       let initialValue: string | undefined;
       let inherits = false;
-      atRule.walkDecls((decl) => {
+      atRule.walkDecls(decl => {
         if (decl.prop === "initial-value") initialValue = decl.value;
         if (decl.prop === "inherits") inherits = decl.value.trim() === "true";
       });
@@ -66,7 +66,7 @@ export default defineConfig({
       browser_specific_settings: {
         gecko: {
           // Firefox MV3 필수. AMO에 한 번 올리면 바꿀 수 없음
-          id: "fmkorea-preview@ich-mag-dich",
+          id: "fmkorea-preview@extension",
           // 개발자 서버로 수집/전송하는 데이터 없음
           data_collection_permissions: { required: ["none"] },
         },
