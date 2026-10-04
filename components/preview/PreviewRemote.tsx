@@ -14,7 +14,7 @@ function RemoteButton({
   return (
     <Button
       variant="outline"
-      size="icon"
+      size="default"
       className="rounded-full shadow-md"
       aria-label={label}
       title={label}
