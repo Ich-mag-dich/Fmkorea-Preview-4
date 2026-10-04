@@ -42,6 +42,11 @@ function PreviewModal({
   const scrollToComments = () =>
     commentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
+  // 미리보기 안에서 다른 글로 이동하면(게시판 이력 등) 이전 스크롤 위치가 아니라 맨 위부터
+  useEffect(() => {
+    getViewport()?.scrollTo({ top: 0 });
+  }, [href]);
+
   // 미리보기 중엔 탭 제목을 게시글 제목으로, 닫히거나 다른 글로 바뀌면 원래대로.
   // 닫힘 애니메이션을 기다리지 않고 닫기 시작할 때 바로 되돌림
   const pageTitle = open ? data?.PostData.pageTitle : undefined;

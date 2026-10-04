@@ -243,7 +243,23 @@ export const parsePost = (url: string, doc: Document): PostData => {
 
     commentPage: pagination.currentPage,
     totalCommentPages: pagination.totalPages,
+    historyParams: parseHistoryParams(doc),
   };
 
   return postData;
+};
+
+/**
+ * 게시판 이력 버튼에서 이력 요청 값을 읽음
+ * <button class="humorHistory" data-ch="..." onclick="window.humorHistory(this,회원번호);">
+ * ch는 글마다 발급되는 값이라 목록이 아닌 게시글 페이지에서만 얻을 수 있음
+ */
+const parseHistoryParams = (doc: Document): PostData["historyParams"] => {
+  const btn = doc.querySelector<HTMLElement>("button.humorHistory");
+  const ch = btn?.dataset.ch;
+  const memberSrl = btn
+    ?.getAttribute("onclick")
+    ?.match(/humorHistory\(\s*this\s*,\s*(\d+)\s*\)/)?.[1];
+  if (!ch || !memberSrl) return null;
+  return { ch, memberSrl, isBest: btn?.dataset.is_best?.trim() === "1" };
 };

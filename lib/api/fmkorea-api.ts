@@ -1,5 +1,12 @@
 import { parseComment, parsePagination, parsePost } from "../parser";
-import type { BlindType, PostData, VoteResult, VoteType } from "../types";
+import type {
+  BlindType,
+  BoardHistory,
+  HistoryItem,
+  PostData,
+  VoteResult,
+  VoteType,
+} from "../types";
 import { type CommentData } from "./../types";
 import { toCanonicalPostUrl, urls, withCommentPage } from "./urls";
 
@@ -262,4 +269,70 @@ export const insertComment = async ({
     throw new Error(text("message") || "댓글을 등록하지 못했습니다");
   }
   return commentSrl;
+};
+
+/** 이력 표의 한 줄(<tr>)을 읽음. 날짜 칸은 <span class="layer">전체 날짜</span>짧은 날짜 구조 */
+const parseHistoryRow = (tr: Element): HistoryItem | null => {
+  const a = tr.querySelector<HTMLAnchorElement>("th a");
+  const href = a?.getAttribute("href");
+  if (!a || !href) return null;
+
+  const regdate = tr.querySelector(".regdate");
+  const fullDate = regdate?.querySelector(".layer")?.textContent?.trim() ?? "";
+  const date = (regdate?.textContent ?? "").replace(fullDate, "").trim();
+
+  // 글 제목 끝의 " [2]"는 댓글 수
+  const raw = (a.textContent ?? "").replace(/\s+/g, " ").trim();
+  const m = raw.match(/^(.*?)\s*\[(\d+)\]$/);
+
+  return {
+    url: new URL(href, urls.BASE_URL).href,
+    text: m ? m[1]! : raw,
+    commentCount: m ? Number(m[2]) : undefined,
+    postTitle: a.getAttribute("title") ?? undefined,
+    date,
+    fullDate,
+    active: a.classList.contains("active"),
+  };
+};
+
+/**
+ * 작성자의 이 게시판 이력(최근 글/댓글 8개씩, 가입일).
+ * 게시글 페이지의 "게시판 이력" 버튼과 같은 요청
+ */
+export const fetchBoardHistory = async (
+  post: PostData,
+): Promise<BoardHistory> => {
+  const history = post.historyParams;
+  if (!history) throw new Error("이 글은 게시판 이력을 볼 수 없습니다");
+
+  const params = new URLSearchParams({
+    document_srl: post.docId,
+    target_member_srl: history.memberSrl,
+    is_mobile: "0",
+    mid: post.mid,
+    is_best: history.isBest ? "1" : "0",
+    ch: history.ch,
+  });
+  const res = await pageFetch(
+    `${urls.BASE_URL}/_call/humorHistory.php?${params}`,
+    {
+      headers: { accept: "*/*", "x-requested-with": "XMLHttpRequest" },
+      credentials: "include",
+      referrer: post.url,
+    },
+  );
+  if (!res.ok) throw new Error("게시판 이력을 불러오지 못했습니다");
+
+  const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+  const rows = (selector: string) =>
+    Array.from(doc.querySelectorAll(`${selector} tr`))
+      .map(parseHistoryRow)
+      .filter(item => item !== null);
+
+  return {
+    summary: doc.querySelector(".history-member")?.textContent?.trim() ?? "",
+    documents: rows(".history-document:not(.history-comment)"),
+    comments: rows(".history-comment"),
+  };
 };

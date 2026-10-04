@@ -36,6 +36,32 @@ export interface PostData {
   mid: string;
   commentPage: number;
   totalCommentPages: number;
+  /** "게시판 이력" 요청에 필요한 값. 게시글에 이력 버튼이 없으면 null */
+  historyParams: { ch: string; isBest: boolean; memberSrl: string } | null;
+}
+
+export interface HistoryItem {
+  url: string;
+  /** 글이면 제목, 댓글이면 댓글 내용 */
+  text: string;
+  /** 댓글이 달린 원글 제목 (댓글만) */
+  postTitle?: string;
+  /** 글의 댓글 수 (글만) */
+  commentCount?: number;
+  /** 목록에 보이는 짧은 날짜 (10-04) */
+  date: string;
+  /** 전체 날짜 (2026-10-04 22:04:46) */
+  fullDate: string;
+  /** 지금 보고 있는 글 */
+  active: boolean;
+}
+
+/** 작성자의 이 게시판 활동 이력 (게시판 이력 버튼) */
+export interface BoardHistory {
+  /** "게시판: 메이플 / 가입일: 2024-12-27" */
+  summary: string;
+  documents: HistoryItem[];
+  comments: HistoryItem[];
 }
 
 export type SubmitResult = "success" | "error" | null;
