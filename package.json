@@ -1,6 +1,6 @@
 {
-  "name": "wxt-react-starter",
-  "description": "manifest.json description",
+  "name": "fmkorea-preview",
+  "description": "에펨코리아 게시글 미리보기 확장 기능",
   "private": true,
   "version": "4.0.1",
   "type": "module",
