@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchPost } from "@/lib/api/fmkorea-api";
+import { fetchPost } from "@/lib/api/post";
 import { queryKeys } from "./query-keys";
 
 export const usePost = (href: string) =>

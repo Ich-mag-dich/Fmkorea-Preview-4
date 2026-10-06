@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { fetchPredictionPollList } from "@/lib/api/fmkorea-api";
+import { fetchPredictionPollList } from "@/lib/api/poll";
 import { queryKeys } from "./query-keys";
 
 /** 참여 현황 한 페이지에 오는 인원 */

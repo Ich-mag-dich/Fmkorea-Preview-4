@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { urls } from "@/lib/api/urls";
 import { usePortalContainer } from "@/hooks/use-portal-container";
 import { useQuery } from "@tanstack/react-query";
-import { fetchBlindStatus } from "@/lib/api/fmkorea-api";
+import { fetchBlindStatus } from "@/lib/api/member";
 import { useBlindMember } from "@/hooks/use-blind-member";
 import { queryKeys } from "@/hooks/query-keys";
 import type { BlindType } from "@/lib/types";

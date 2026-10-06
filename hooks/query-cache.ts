@@ -1,5 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
-import type { fetchComments, fetchPost } from "@/lib/api/fmkorea-api";
+import type { fetchComments } from "@/lib/api/comment";
+import type { fetchPost } from "@/lib/api/post";
 import type { CommentData, PostData } from "@/lib/types";
 import { queryKeys } from "./query-keys";
 

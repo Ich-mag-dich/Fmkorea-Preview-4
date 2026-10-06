@@ -1,4 +1,4 @@
-import { fetchComments } from "@/lib/api/fmkorea-api";
+import { fetchComments } from "@/lib/api/comment";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "./query-keys";
 

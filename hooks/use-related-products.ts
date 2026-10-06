@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchRelatedProducts } from "@/lib/api/fmkorea-api";
+import { fetchRelatedProducts } from "@/lib/api/hotdeal";
 import type { PostData } from "@/lib/types";
 import { queryKeys } from "./query-keys";
 

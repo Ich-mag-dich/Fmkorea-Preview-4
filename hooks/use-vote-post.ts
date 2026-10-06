@@ -1,4 +1,4 @@
-import { voteDocument } from "@/lib/api/fmkorea-api";
+import { voteDocument } from "@/lib/api/post";
 import type { PostData, VoteType } from "@/lib/types";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

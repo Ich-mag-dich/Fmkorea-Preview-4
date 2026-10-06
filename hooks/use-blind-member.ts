@@ -1,4 +1,4 @@
-import { blindMember, fetchBlindStatus } from "@/lib/api/fmkorea-api";
+import { blindMember, fetchBlindStatus } from "@/lib/api/member";
 import type { BlindType } from "@/lib/types";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

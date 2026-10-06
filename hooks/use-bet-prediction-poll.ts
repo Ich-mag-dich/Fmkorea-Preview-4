@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { betPredictionPoll } from "@/lib/api/fmkorea-api";
+import { betPredictionPoll } from "@/lib/api/poll";
 import { applyBetResult } from "@/lib/prediction-poll";
 import type { PostData } from "@/lib/types";
 import { toast } from "@/components/ui/toast";

@@ -1,4 +1,4 @@
-import { insertComment } from "@/lib/api/fmkorea-api";
+import { insertComment } from "@/lib/api/comment";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { refetchPostAndComments } from "./query-cache";

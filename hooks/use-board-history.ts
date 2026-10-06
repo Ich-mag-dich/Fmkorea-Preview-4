@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchBoardHistory } from "@/lib/api/fmkorea-api";
+import { fetchBoardHistory } from "@/lib/api/member";
 import type { PostData } from "@/lib/types";
 import { queryKeys } from "./query-keys";
 

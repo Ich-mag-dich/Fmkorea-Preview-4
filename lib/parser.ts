@@ -2,7 +2,13 @@ import { getDocumentSrl, urls } from "./api/urls";
 import { absolutizeMedia, cleanContent } from "./media";
 import { prepareEmbeds } from "./embed";
 import { parsePredictionPolls, removePredictionPolls } from "./prediction-poll";
-import type { CommentData, PostData } from "./types";
+import type {
+  BlindType,
+  BoardHistory,
+  CommentData,
+  HistoryItem,
+  PostData,
+} from "./types";
 
 /**
  * memberPlate에서 작성자 이름 텍스트를 추출하여 반환
@@ -296,4 +302,79 @@ const parseHistoryParams = (doc: Document): PostData["historyParams"] => {
     ?.match(/humorHistory\(\s*this\s*,\s*(\d+)\s*\)/)?.[1];
   if (!ch || !memberSrl) return null;
   return { ch, memberSrl, isBest: btn?.dataset.is_best?.trim() === "1" };
+};
+
+/** 이력 표의 한 줄(<tr>)을 읽음. 날짜 칸은 <span class="layer">전체 날짜</span>짧은 날짜 구조 */
+const parseHistoryRow = (tr: Element): HistoryItem | null => {
+  const a = tr.querySelector<HTMLAnchorElement>("th a");
+  const href = a?.getAttribute("href");
+  if (!a || !href) return null;
+
+  const regdate = tr.querySelector(".regdate");
+  const fullDate = regdate?.querySelector(".layer")?.textContent?.trim() ?? "";
+  const date = (regdate?.textContent ?? "").replace(fullDate, "").trim();
+
+  // 글 제목 끝의 " [2]"는 댓글 수
+  const raw = (a.textContent ?? "").replace(/\s+/g, " ").trim();
+  const m = raw.match(/^(.*?)\s*\[(\d+)\]$/);
+
+  return {
+    url: new URL(href, urls.BASE_URL).href,
+    text: m ? m[1]! : raw,
+    commentCount: m ? Number(m[2]) : undefined,
+    postTitle: a.getAttribute("title") ?? undefined,
+    date,
+    fullDate,
+    active: a.classList.contains("active"),
+  };
+};
+
+/**
+ * "게시판 이력" 응답(HTML 조각)을 읽음.
+ * 최근 글/댓글 표가 하나씩 있고 위에 "게시판: ... / 가입일: ..." 요약이 있음
+ */
+export const parseBoardHistory = (doc: Document): BoardHistory => {
+  const rows = (selector: string) =>
+    Array.from(doc.querySelectorAll(`${selector} tr`))
+      .map(parseHistoryRow)
+      .filter(item => item !== null);
+
+  return {
+    summary: doc.querySelector(".history-member")?.textContent?.trim() ?? "",
+    documents: rows(".history-document:not(.history-comment)"),
+    comments: rows(".history-comment"),
+  };
+};
+
+/**
+ * 회원 메뉴 응답(XML)에서 블라인드 상태를 읽음.
+ * 블라인드 항목은 상태에 따라 두 형식으로 옴
+ * - 아무것도 안 했을 때: blind_click(this, srl, 2, 'add') "블라인드" 하나
+ *   (둘 다 했을 때는 'cancel'로 올 것으로 추정, 아직 확인 못 함)
+ * - 하나만 했을 때: blind_click(this, srl, 0) 글·댓글 / (…, 1) 쪽지 두 개,
+ *   블라인드 중인 쪽은 라벨 끝에 "취소"
+ * 로그인 안 했거나 자기 자신이면 항목이 없어서 빈 객체
+ */
+export const parseBlindStatus = (
+  xml: Document,
+): Partial<Record<BlindType, boolean>> => {
+  const status: Partial<Record<BlindType, boolean>> = {};
+  for (const item of xml.querySelectorAll("menus > item")) {
+    const [, kind, mode] =
+      item
+        .querySelector("url")
+        ?.textContent?.match(
+          /^blind_click\(this,\s*\d+,\s*(\d)(?:,\s*'(\w+)')?/,
+        ) ?? [];
+    if (kind === "2") {
+      const blinded = mode === "cancel";
+      status.default = blinded;
+      status.message = blinded;
+    } else if (kind === "0" || kind === "1") {
+      status[kind === "0" ? "default" : "message"] =
+        item.querySelector("str")?.textContent?.trim().endsWith("취소") ??
+        false;
+    }
+  }
+  return status;
 };
