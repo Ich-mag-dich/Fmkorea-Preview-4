@@ -94,6 +94,8 @@ bun run compile      # 타입 검사
 
 > `bun build`처럼 `run` 없이 실행하면 package.json 스크립트가 아니라 Bun 자체 명령어가 실행되니 꼭 `bun run`을 붙여 주세요.
 
+코드 구조, 새 기능 추가 순서, 사이트 특이점은 [CONTRIBUTING.md](./CONTRIBUTING.md)에 정리되어 있습니다.
+
 ## 빌드
 
 ```bash
@@ -121,10 +123,10 @@ components/
     poll/           승부예측
     hotdeal/        유사 핫딜 · 쿠팡/지마켓 상품
   ui/               공통 UI (Button, Dialog, Toast)
-hooks/              데이터 요청 · 저장소 훅
+hooks/              데이터 요청 · 저장소 훅, react-query 키 · 캐시 함수
 lib/
-  api/              fmkorea 요청 함수, URL 유틸
-  parser.ts         게시글 · 댓글 HTML 파싱
+  api/              fmkorea 요청 (request.ts 공통 + 기능별 파일), URL 유틸
+  parser.ts         게시글 · 댓글 · 응답 HTML 파싱
   embed.ts          미디어 임베드 판별
   settings.ts       설정 항목 정의
 ```
