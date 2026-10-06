@@ -3,8 +3,8 @@ import { ReplyIcon, ThumbsDownIcon, ThumbsUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CommentData, VoteType } from "@/lib/types";
-import AuthorMenu from "./AuthorMenu";
-import RichContent from "./RichContent";
+import AuthorMenu from "../author/AuthorMenu";
+import RichContent from "../content/RichContent";
 
 // 댓글 본문도 fmkorea HTML이라 하위 태그 선택자로 스타일링
 const contentClassName = cn(

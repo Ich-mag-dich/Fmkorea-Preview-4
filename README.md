@@ -113,7 +113,13 @@ entrypoints/
   popup/            확장 아이콘 팝업
   options/          설정 페이지
 components/
-  preview/          미리보기 UI (본문, 댓글, 임베드, 작성자 메뉴 등)
+  preview/          미리보기 UI (창, 리모컨, 로딩·에러 화면)
+    post/           게시글 본문 · 게시판 이력
+    comment/        댓글 목록 · 작성 · 페이지
+    content/        본문·댓글 HTML 렌더링 · 미디어 임베드
+    author/         작성자 메뉴 · 블라인드
+    poll/           승부예측
+    hotdeal/        유사 핫딜 · 쿠팡/지마켓 상품
   ui/               공통 UI (Button, Dialog, Toast)
 hooks/              데이터 요청 · 저장소 훅
 lib/

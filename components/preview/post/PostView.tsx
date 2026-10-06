@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { VoteType, PostData } from "@/lib/types";
-import AuthorMenu from "./AuthorMenu";
-import RichContent from "./RichContent";
+import AuthorMenu from "../author/AuthorMenu";
+import RichContent from "../content/RichContent";
+import PredictPoll from "../poll/PredictPoll";
+import RelatedHotdeals from "../hotdeal/RelatedHotdeals";
+import RelatedProducts from "../hotdeal/RelatedProducts";
 import BoardHistory from "./BoardHistory";
-import PredictPoll from "./PredictPoll";
-import RelatedHotdeals from "./RelatedHotdeals";
-import RelatedProducts from "./RelatedProducts";
 
 // 본문은 fmkorea가 준 HTML이라 Tailwind 클래스를 직접 못 붙이므로 하위 태그 선택자로 스타일링
 const contentClassName = cn(
