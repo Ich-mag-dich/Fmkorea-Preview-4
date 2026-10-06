@@ -6,22 +6,17 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useBetPredictionPoll } from "@/hooks/use-bet-prediction-poll";
+import { usePreviewPost } from "@/hooks/use-preview-post";
 import type { PredictionPoll } from "@/lib/types";
 import { formatNumber } from "./format";
 import PollOption from "./PollOption";
 
 /** 게시글 속 승부예측. 원래 본문의 form.fm-pp를 떼어내서 다시 그림 */
-function PredictPoll({
-  poll,
-  onSubmit,
-  pending = false,
-}: {
-  poll: PredictionPoll;
-  /** 참여하기. 없으면 참여 버튼이 비활성화됨 */
-  onSubmit?: (option: string, bet: number) => void;
-  /** 참여 요청 중 */
-  pending?: boolean;
-}) {
+function PredictPoll({ poll }: { poll: PredictionPoll }) {
+  const { href, post } = usePreviewPost();
+  const betMutation = useBetPredictionPoll(href);
+  const pending = betMutation.isPending;
   const id = useId();
   const [selected, setSelected] = useState<string | null>(null);
   const [amount, setAmount] = useState(String(poll.bet?.initial ?? ""));
@@ -32,11 +27,12 @@ function PredictPoll({
 
   const amountNum = parseInt(amount) || 0;
   const amountValid = !!bet && amountNum >= bet.min && amountNum <= bet.max;
-  const canSubmit = !!onSubmit && selected !== null && amountValid && !pending;
+  const canSubmit = selected !== null && amountValid && !pending;
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (canSubmit) onSubmit(selected, amountNum);
+    if (!canSubmit) return;
+    betMutation.mutate({ post, pk: poll.pk, option: selected, bet: amountNum });
   };
 
   return (
@@ -107,13 +103,7 @@ function PredictPoll({
           <Button
             type="submit"
             disabled={!canSubmit}
-            title={
-              !onSubmit
-                ? "아직 지원하지 않습니다"
-                : selected === null
-                  ? "선택지를 고르세요"
-                  : undefined
-            }
+            title={selected === null ? "선택지를 고르세요" : undefined}
             className="ml-auto bg-(--poll) text-white hover:bg-(--poll)/85">
             {pending && <LoaderCircleIcon className="animate-spin" />}
             참여하기

@@ -10,16 +10,12 @@ const itemKey = (comment: CommentData) =>
 function CommentList({
   comments,
   commentCount,
-  mid,
-  docId,
   onVote,
   onReply,
   replyPending = false,
 }: {
   comments: CommentData[];
   commentCount: number;
-  mid: string;
-  docId: string;
   onVote?: (type: VoteType, id: string) => void;
   /** 답글 등록. 성공하면 true (입력창이 닫힘) */
   onReply?: (parentSrl: string, content: string) => Promise<boolean>;
@@ -64,8 +60,6 @@ function CommentList({
               <CommentItem
                 key={key}
                 comment={comment}
-                mid={mid}
-                docId={docId}
                 onVote={onVote}
                 isReplying={replyingKey === key}
                 onReply={

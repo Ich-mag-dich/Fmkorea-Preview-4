@@ -6,25 +6,23 @@ import type { CommentData } from "@/lib/types";
 import CommentPagination from "./CommentPagination";
 import CommentForm from "./CommentForm";
 import { useInsertComment } from "@/hooks/use-insert-comment";
+import { usePreviewPost } from "@/hooks/use-preview-post";
 
 function CommentSection({
-  href,
   initial,
-  mid,
-  docId,
   onPageChange,
 }: {
-  href: string;
+  /** 게시글 페이지에 같이 들어 있던 첫 댓글 페이지 */
   initial: {
     comments: CommentData[];
     commentCount: number;
     currentPage: number;
     totalPages: number;
   };
-  mid: string;
-  docId: string;
   onPageChange?: () => void;
 }) {
+  const { href, post } = usePreviewPost();
+  const { mid, docId } = post;
   const [page, setPage] = useState(initial.currentPage);
   const isInitialPage = page === initial.currentPage;
   const { data, isFetching } = useComments(href, page, !isInitialPage);
@@ -43,8 +41,6 @@ function CommentSection({
       <CommentList
         comments={current.comments}
         commentCount={current.commentCount}
-        mid={mid}
-        docId={docId}
         onVote={(type, id) => {
           const comment = current.comments.find(c => c.id === id);
           if (comment) vote.mutate({ comment, type });

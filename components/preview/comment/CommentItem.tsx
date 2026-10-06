@@ -23,15 +23,11 @@ const MAX_DEPTH = 6;
 
 function CommentItem({
   comment,
-  mid,
-  docId,
   onVote,
   isReplying = false,
   onReply,
   replyForm,
 }: {
-  mid: string;
-  docId: string;
   comment: CommentData;
   onVote?: (type: VoteType, id: string) => void;
   /** 이 댓글의 답글 입력창이 열려 있는지 */
@@ -74,8 +70,6 @@ function CommentItem({
           )}
           <AuthorMenu
             memberSrl={comment.memberSrl}
-            mid={mid}
-            docId={docId}
             className="inline-flex items-center gap-1.5 text-foreground">
             <span className="inline-flex items-center gap-1 text-sm font-semibold">
               {comment.levelIcon && (

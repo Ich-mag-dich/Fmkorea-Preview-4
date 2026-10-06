@@ -92,7 +92,7 @@ lib/
 4. **파싱** — 응답이나 페이지가 HTML이면 파싱 함수를 [lib/parser.ts](lib/parser.ts)(또는 기능 전용 파일)에 둡니다. 게시글 페이지에서 읽을 값이면 `parsePost`의 `PostData`에 필드를 추가합니다.
 5. **캐시 키** — 조회라면 [hooks/query-keys.ts](hooks/query-keys.ts)에 키를 추가합니다.
 6. **훅** — `hooks/use-<기능>.ts`에 `useQuery`/`useMutation` 훅을 만듭니다. 게시글 데이터를 고쳐야 하면 [hooks/query-cache.ts](hooks/query-cache.ts)의 `updatePostData`, `updateComments`를 씁니다.
-7. **컴포넌트** — `components/preview/<기능>/`에 컴포넌트를 만들고 [PostView](components/preview/post/PostView.tsx) 등에 배치합니다.
+7. **컴포넌트** — `components/preview/<기능>/`에 컴포넌트를 만들고 [PostView](components/preview/post/PostView.tsx) 등에 배치합니다. 지금 보는 글(`href`, `post`)이 필요하면 props로 받지 말고 [`usePreviewPost()`](hooks/use-preview-post.ts)로 꺼내고, 버튼 동작은 그 컴포넌트에서 훅을 직접 부릅니다.
 
 ## 에펨코리아 사이트 특이점
 

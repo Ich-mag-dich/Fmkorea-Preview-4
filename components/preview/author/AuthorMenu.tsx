@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { urls } from "@/lib/api/urls";
 import { usePortalContainer } from "@/hooks/use-portal-container";
+import { usePreviewPost } from "@/hooks/use-preview-post";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBlindStatus } from "@/lib/api/member";
 import { useBlindMember } from "@/hooks/use-blind-member";
@@ -13,20 +14,20 @@ import BlindDialog from "./BlindDialog";
 
 const openTab = (url: string) => window.open(url, "_blank", "noopener");
 
-/** 작성자(children)를 누르면 쪽지/회원 정보/작성 글 메뉴를 띄움 */
+/**
+ * 작성자(children)를 누르면 쪽지/회원 정보/작성 글 메뉴를 띄움.
+ * 요청에 필요한 게시판(mid)과 글 번호(docId)는 지금 보는 글에서 가져옴
+ */
 function AuthorMenu({
   memberSrl,
-  mid,
-  docId,
   className,
   children,
 }: {
   memberSrl: string;
-  mid: string;
-  docId: string;
   className?: string;
   children: ReactNode; // 작성자 이름(+아이콘)
 }) {
+  const { mid, docId } = usePreviewPost().post;
   const container = usePortalContainer();
   const [open, setOpen] = useState(false);
 

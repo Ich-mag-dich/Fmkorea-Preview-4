@@ -2,7 +2,9 @@ import { ThumbsDownIcon, ThumbsUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import type { VoteType, PostData } from "@/lib/types";
+import type { VoteType } from "@/lib/types";
+import { usePreviewPost } from "@/hooks/use-preview-post";
+import { useVotePost } from "@/hooks/use-vote-post";
 import AuthorMenu from "../author/AuthorMenu";
 import RichContent from "../content/RichContent";
 import PredictPoll from "../poll/PredictPoll";
@@ -23,19 +25,11 @@ const contentClassName = cn(
   "[&_iframe]:max-w-full",
 );
 
-function PostView({
-  post,
-  onVote,
-  onBet,
-  bettingPk = null,
-}: {
-  post: PostData;
-  onVote?: (type: VoteType) => void;
-  /** 승부예측 참여하기 */
-  onBet?: (pk: string, option: string, bet: number) => void;
-  /** 참여 요청 중인 승부예측 번호 */
-  bettingPk?: string | null;
-}) {
+function PostView() {
+  const { href, post } = usePreviewPost();
+  const vote = useVotePost(href);
+  const onVote = (type: VoteType) => vote.mutate({ post, type });
+
   return (
     <article className="flex flex-col">
       {/* pr-8: DialogContent 우상단 X 버튼과 겹치지 않게 */}
@@ -46,8 +40,6 @@ function PostView({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-center text-sm text-muted-foreground">
           <AuthorMenu
             memberSrl={post.authorMemberSrl}
-            mid={post.mid}
-            docId={post.docId}
             className="inline-flex items-center gap-1.5 text-foreground">
             {post.authorLevelIcon && (
               <img
@@ -77,12 +69,7 @@ function PostView({
         // 본문(contentClassName)과 같은 좌우 여백
         <div className="flex flex-col gap-4 px-6">
           {post.predictionPolls.map(poll => (
-            <PredictPoll
-              key={poll.pk}
-              poll={poll}
-              pending={bettingPk === poll.pk}
-              onSubmit={onBet && ((option, bet) => onBet(poll.pk, option, bet))}
-            />
+            <PredictPoll key={poll.pk} poll={poll} />
           ))}
         </div>
       )}
@@ -96,8 +83,7 @@ function PostView({
         <Button
           variant="outline"
           className="text-blue-600 dark:text-blue-400"
-          disabled={!onVote}
-          onClick={() => onVote?.("up")}>
+          onClick={() => onVote("up")}>
           <ThumbsUpIcon />
           추천
         </Button>
@@ -107,8 +93,7 @@ function PostView({
         <Button
           variant="outline"
           className="text-red-700 dark:text-red-400"
-          disabled={!onVote}
-          onClick={() => onVote?.("down")}>
+          onClick={() => onVote("down")}>
           <ThumbsDownIcon />
           비추천
         </Button>
