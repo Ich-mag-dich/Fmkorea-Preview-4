@@ -8,7 +8,7 @@ import {
 } from "@/hooks/use-prediction-poll-list";
 import { cn } from "@/lib/utils";
 import type { PredictionPollOption } from "@/lib/types";
-import { formatNumber, formatRegdate } from "./format";
+import { formatNumber, formatRegdate } from "@/lib/format";
 
 /** 응답의 status → 사이트에 보이는 글자 */
 const BET_STATUS_TEXT: Record<string, string> = { 베팅: "참여중" };

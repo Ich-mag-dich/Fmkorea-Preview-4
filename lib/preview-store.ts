@@ -1,5 +1,3 @@
-import type { MouseEvent } from "react";
-
 type Listener = () => void;
 
 // 미리보기가 쌓은 방문 기록 항목 표시. 뒤로/앞으로 가기 때 이 값으로 구분
@@ -45,19 +43,4 @@ export const previewStore = {
     listeners.add(l);
     return () => listeners.delete(l);
   },
-};
-
-/**
- * 미리보기 안의 게시글 링크 onClick용.
- * 그냥 클릭은 미리보기 안에서 그 글로 이동, Ctrl/Shift/휠 클릭은 브라우저 기본 동작(새 탭)
- */
-export const openInPreview = (
-  e: MouseEvent<HTMLAnchorElement>,
-  url: string,
-) => {
-  if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
-    return;
-  }
-  e.preventDefault();
-  previewStore.open(url);
 };

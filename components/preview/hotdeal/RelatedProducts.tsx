@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ImageOffIcon, ShoppingBagIcon } from "lucide-react";
 import { useRelatedProducts } from "@/hooks/use-related-products";
+import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { PostData } from "@/lib/types";
 import RelatedSection from "./RelatedSection";
@@ -66,7 +67,7 @@ function RelatedProducts({ post }: { post: PostData }) {
               <span className="line-clamp-2 font-medium">{item.title}</span>
               <span className="flex flex-wrap items-baseline gap-x-2 text-xs text-muted-foreground tabular-nums">
                 <b className="text-sm font-bold text-red-600 dark:text-red-400">
-                  {item.price.toLocaleString("ko-KR")}원
+                  {formatNumber(item.price)}원
                 </b>
                 {item.result?.isRocket && <span>로켓배송</span>}
                 {item.result?.isFreeShipping && <span>무료배송</span>}

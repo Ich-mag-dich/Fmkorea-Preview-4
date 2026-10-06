@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useBetPredictionPoll } from "@/hooks/use-bet-prediction-poll";
 import { usePreviewPost } from "@/hooks/use-preview-post";
 import type { PredictionPoll } from "@/lib/types";
-import { formatNumber } from "./format";
+import { formatNumber } from "@/lib/format";
 import PollOption from "./PollOption";
 
 /** 게시글 속 승부예측. 원래 본문의 form.fm-pp를 떼어내서 다시 그림 */

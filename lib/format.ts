@@ -1,3 +1,4 @@
+/** 화면에 보이는 숫자 형식. 1234567 → "1,234,567" */
 export const formatNumber = (n: number) => n.toLocaleString("ko-KR");
 
 /** 20261007024626 → "2026-10-07 02:46:26" */

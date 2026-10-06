@@ -3,7 +3,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { PredictionPollOption } from "@/lib/types";
-import { formatNumber } from "./format";
+import { formatNumber } from "@/lib/format";
 import ParticipantList from "./ParticipantList";
 
 /** 승부예측 선택지 하나. 비율 막대와 참여 현황 펼치기 */
