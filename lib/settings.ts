@@ -24,3 +24,19 @@ export const videoVolumeItem = storage.defineItem<number>("sync:videoVolume", {
 export const fontItem = storage.defineItem<string>("sync:fontFamily", {
   fallback: "",
 });
+
+/** 게시판 인기글 표시 여부 */
+export const showPopularPostsItem = storage.defineItem<boolean>(
+  "sync:showPopularPosts",
+  {
+    fallback: true,
+  },
+);
+
+/** 게시판 대문 표시 여부 */
+export const showBoardFrontItem = storage.defineItem<boolean>(
+  "sync:showBoardFront",
+  {
+    fallback: true,
+  },
+);

@@ -2,6 +2,8 @@ import { CodeIcon } from "lucide-react";
 import PreviewWidthSetting from "./components/PreviewWidthSetting";
 import VideoVolumeSetting from "./components/VideoVolumeSetting";
 import FontSetting from "./components/FontSetting";
+import PopularPostSetting from "./components/PopularPostSetting";
+import BoardFrontSetting from "./components/BoardFrontSetting";
 
 function App() {
   const { version } = browser.runtime.getManifest();
@@ -36,6 +38,8 @@ function App() {
         <PreviewWidthSetting />
         <VideoVolumeSetting />
         <FontSetting />
+        <PopularPostSetting />
+        <BoardFrontSetting />
 
         <p className="text-center text-sm text-muted-foreground">
           설정은 자동으로 저장되며, 브라우저 동기화가 켜져 있으면 다른 기기에도
