@@ -90,6 +90,7 @@ bun install
 bun run dev          # Chrome 개발 모드
 bun run dev:firefox  # Firefox 개발 모드
 bun run compile      # 타입 검사
+bun run test         # 파서 테스트
 ```
 
 > `bun build`처럼 `run` 없이 실행하면 package.json 스크립트가 아니라 Bun 자체 명령어가 실행되니 꼭 `bun run`을 붙여 주세요.
@@ -129,4 +130,5 @@ lib/
   parser.ts         게시글 · 댓글 · 응답 HTML 파싱
   embed.ts          미디어 임베드 판별
   settings.ts       설정 항목 정의
+tests/              파서 테스트 (fixtures/ 에 저장한 사이트 페이지)
 ```

@@ -14,10 +14,11 @@ bun run dev:firefox  # Firefox 개발 모드
 
 > `bun build`처럼 `run` 없이 실행하면 Bun 자체 명령어가 실행됩니다. 꼭 `bun run`을 붙여 주세요.
 
-변경을 올리기 전에 아래 두 가지가 통과해야 합니다.
+변경을 올리기 전에 아래 세 가지가 통과해야 합니다.
 
 ```bash
 bun run compile   # 타입 검사
+bun run test      # 파서 테스트 (bun run test:watch 는 저장할 때마다 다시 실행)
 bun run build     # 빌드
 ```
 
@@ -59,6 +60,9 @@ lib/
   sanitize.ts        렌더링 전 HTML 정화 (DOMPurify)
   types.ts           데이터 타입
   settings.ts        설정 항목 (확장 저장소)
+tests/
+  *.test.ts          Vitest 테스트
+  fixtures/          사이트에서 저장한 페이지·응답, 개인 정보 지우는 스크립트
 ```
 
 ### 각 층의 책임
@@ -124,15 +128,25 @@ lib/
 
 ## 확인 방법
 
-아직 자동 테스트는 없습니다. 변경한 부분에 맞춰 직접 확인해 주세요.
+### 자동 테스트
+
+`tests/`에 [Vitest](https://vitest.dev/) 테스트가 있습니다. 사이트에서 저장한 실제 페이지(`tests/fixtures/`)를 [happy-dom](https://github.com/capricorn86/happy-dom)으로 읽어 파서 결과를 확인합니다. 네트워크는 쓰지 않습니다.
+
+- `parser.test.ts` — 게시글·댓글·페이지 파싱, 본문 정리, 핫딜
+- `prediction-poll.test.ts` — 승부예측 파싱과 참여 결과 반영
+- `links.test.ts` — 글 주소 처리, 우클릭한 링크 판별
+
+파서를 바꾸면 테스트도 같이 고치거나 추가합니다. 새 페이지가 필요하면 [tests/fixtures/README.md](tests/fixtures/README.md)의 방법대로 저장하고, 커밋 전에 `bun run fixtures:sanitize`로 개인 정보를 지웁니다.
+
+### 직접 확인
+
+화면과 실제 요청은 테스트로 확인할 수 없어서, 변경한 부분에 맞춰 브라우저에서 확인해 주세요.
 
 - 일반 글, 이미지·영상이 많은 글, 핫딜 글(정보 표, 유사 핫딜, 종료 신고), 승부예측 글(마감 전·후)
 - 댓글 페이지 이동, 답글, 베스트 댓글
 - 로그인한 상태와 안 한 상태
 - 사이트 야간 모드 켜고 끄기
 - Chrome과 Firefox 둘 다
-
-파서를 바꿨다면 사이트에서 저장한 HTML로 결과를 확인하면 빠릅니다. `happy-dom`으로 `DOMParser`를 만들어 `parsePost` 등을 직접 돌려 볼 수 있습니다.
 
 ## 커밋과 PR
 
