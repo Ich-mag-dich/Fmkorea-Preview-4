@@ -1,1 +1,91 @@
 @import "../../assets/globals.css";
+
+/*
+ * 게시글 속 승부예측 폼 (form.fm-pp).
+ * 배경/테두리는 테마 색(bg-muted 등)을 써서 다크 모드에서 자동으로 바뀌고,
+ * 직접 고른 색만 dark: 로 따로 지정
+ */
+@layer components {
+  .fm-pp {
+    --fm-pp-accent: #5b79bd;
+    @apply my-4 flex flex-col overflow-hidden rounded-md border border-(--fm-pp-accent) text-sm;
+
+    /* 아이콘 폰트(Font Awesome)가 없어서 빈 칸만 남으므로 숨김 */
+    i.fa {
+      @apply hidden;
+    }
+    /* 원래는 마우스를 올려야 보이는 설명. 아이콘 대신 글자로 보여줌 */
+    .tooltip {
+      @apply mr-1 text-xs text-muted-foreground;
+    }
+
+    /* 제목 줄 */
+    > .title {
+      @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-1 bg-(--fm-pp-accent) px-4 py-2.5 font-bold text-white;
+    }
+    .status {
+      @apply flex gap-4 tabular-nums;
+      .tooltip {
+        @apply font-normal text-white/75;
+      }
+    }
+
+    /* 선택지 목록 */
+    .o_list {
+      @apply flex flex-col gap-4 px-4 py-4;
+    }
+    .o {
+      @apply grid grid-cols-[minmax(6rem,30%)_1fr] items-start gap-x-4 gap-y-1;
+    }
+    .i {
+      @apply flex items-center gap-2 py-1.5;
+    }
+    .i input,
+    .i label {
+      @apply cursor-pointer;
+    }
+
+    /* 비율 막대: .sum 너비는 원래 HTML의 style="width:52%"를 그대로 씀 */
+    .pro .all {
+      @apply block h-8 overflow-hidden rounded-sm border bg-muted;
+    }
+    .pro .sum {
+      @apply flex h-full items-center bg-(--fm-pp-accent) px-3 font-bold whitespace-nowrap text-white tabular-nums;
+    }
+
+    .label-area {
+      @apply col-start-2 flex flex-wrap gap-x-4 gap-y-1 tabular-nums;
+    }
+
+    /* 마감 안내 상자 */
+    .bet {
+      @apply mx-4 mb-4 flex flex-col items-center gap-1.5 rounded-sm border bg-muted px-4 py-4 text-center;
+    }
+    .red {
+      @apply text-red-600 dark:text-red-400;
+    }
+    .info {
+      @apply mt-2 w-full border-t border-dashed pt-3;
+    }
+    button {
+      @apply rounded-md border bg-background px-4 py-1.5 shadow-xs hover:bg-accent;
+    }
+
+    /* 참여 입력 줄 (마감 전 글에만 있음) */
+    .input-area {
+      @apply mt-2 flex flex-wrap items-center justify-center gap-2 text-muted-foreground;
+      .label {
+        @apply font-medium text-foreground;
+      }
+      input[type="text"] {
+        @apply h-8 w-28 rounded-md border border-input bg-background px-2.5 text-right text-foreground tabular-nums outline-none focus-visible:border-(--fm-pp-accent) focus-visible:ring-3 focus-visible:ring-(--fm-pp-accent)/30;
+      }
+      button[type="submit"] {
+        @apply h-8 border-transparent bg-(--fm-pp-accent) py-0 font-medium text-white hover:bg-(--fm-pp-accent)/85;
+      }
+      .my_point {
+        @apply font-semibold text-foreground tabular-nums;
+      }
+    }
+  }
+}
