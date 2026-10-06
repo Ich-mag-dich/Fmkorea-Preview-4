@@ -33,6 +33,8 @@ export const fetchPost = async (
   const postUrl = toCanonicalPostUrl(url);
 
   const res = await fetch(postUrl);
+  // 에러/요청 제한 페이지를 글로 파싱하지 않고 에러 화면(다시 시도)으로 보냄
+  if (!res.ok) throw new Error(`게시글을 불러오지 못했습니다 (${res.status})`);
   const html = await res.text();
   const doc = new DOMParser().parseFromString(html, "text/html");
 
@@ -44,6 +46,7 @@ export const fetchPost = async (
 
 export const fetchComments = async (url: string, cpage: number) => {
   const res = await fetch(withCommentPage(url, cpage));
+  if (!res.ok) throw new Error(`댓글을 불러오지 못했습니다 (${res.status})`);
   const doc = new DOMParser().parseFromString(await res.text(), "text/html");
   const { comments, commentCount } = parseComment(doc);
   const { currentPage, totalPages } = parsePagination(doc);
@@ -74,7 +77,6 @@ export const voteDocument = async (
   });
 
   const data: VoteResult = await res.json();
-  console.log(data);
 
   // 실패해도 HTTP 200에 error: -1로 오므로 직접 예외로 바꿔야 mutation의 onError로 감
   if (data.error !== 0) throw new Error(data.message);
@@ -104,7 +106,6 @@ export const voteComment = async (
   });
 
   const data: VoteResult = await res.json();
-  console.log(data);
 
   // 댓글 추천은 성공/취소/실패 모두 error: -2로 와서 여기서 예외로 바꾸지 않음.
   // 성공 여부 판단은 useVoteComment에서 응답 필드로 함
@@ -367,7 +368,7 @@ export const fetchPredictionPollList = async (
       page: String(page),
       module: "pp",
       act: "getPpList",
-    }),
+    }).toString(),
   });
   if (!res.ok) throw new Error("승부예측 목록을 불러오지 못했습니다");
 

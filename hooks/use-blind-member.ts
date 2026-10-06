@@ -39,7 +39,6 @@ export const useBlindMember = ({
         mode,
         memo,
       });
-      console.log(data);
 
       // api.php 응답 형식을 믿지 않고, 상태를 다시 조회해서 실제로 바뀌었는지로 판단
       const status = await queryClient.fetchQuery({

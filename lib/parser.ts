@@ -178,15 +178,12 @@ export const parsePost = (url: string, doc: Document): PostData => {
   const authorPlate = doc.querySelector(".member_plate");
   const pagination = parsePagination(doc);
   let voteRid = "";
-  let docId = getDocumentSrl(url) ?? "";
-
-  try {
-    const docHref = (
-      doc.querySelector("div.document_address > a") as HTMLAnchorElement
-    ).href;
-    const extracted = getDocumentSrl(docHref);
-    if (extracted) docId = extracted;
-  } catch {}
+  // URL에 글 번호가 없는 형식이면 본문 위 글 주소 링크에서 찾음
+  const addressHref = doc
+    .querySelector<HTMLAnchorElement>("div.document_address > a")
+    ?.getAttribute("href");
+  const docId =
+    (addressHref && getDocumentSrl(addressHref)) || getDocumentSrl(url) || "";
 
   if (docId) {
     const voteBtn = doc.querySelector(`span.vote`);
@@ -231,7 +228,7 @@ export const parsePost = (url: string, doc: Document): PostData => {
         .querySelector("div.side.fr")
         ?.textContent?.trim()
         .replace(/\s+/g, " ") ?? "",
-    docId: getDocumentSrl(url) ?? "",
+    docId,
     url,
     mid: doc.querySelector<HTMLInputElement>("input[name='mid']")?.value ?? "",
 
