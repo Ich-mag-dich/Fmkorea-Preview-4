@@ -1,4 +1,4 @@
-import { useState, type MouseEvent, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   FileTextIcon,
   HistoryIcon,
@@ -8,18 +8,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { previewStore } from "@/lib/preview-store";
+import { openInPreview } from "@/lib/preview-store";
 import { useBoardHistory } from "@/hooks/use-board-history";
 import type { HistoryItem, PostData } from "@/lib/types";
-
-/** 그냥 클릭은 미리보기 안에서 그 글로 이동, Ctrl/Shift/휠 클릭은 브라우저 기본 동작(새 탭) */
-const openInPreview = (e: MouseEvent<HTMLAnchorElement>, url: string) => {
-  if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
-    return;
-  }
-  e.preventDefault();
-  previewStore.open(url);
-};
 
 function HistoryList({
   icon,

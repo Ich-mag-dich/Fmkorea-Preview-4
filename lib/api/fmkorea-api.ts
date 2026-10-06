@@ -4,6 +4,10 @@ import type {
   BoardHistory,
   HistoryItem,
   PostData,
+  PredictionPollBetResult,
+  PredictionPollList,
+  RelatedProduct,
+  RelatedProductsResult,
   VoteResult,
   VoteType,
 } from "../types";
@@ -335,4 +339,112 @@ export const fetchBoardHistory = async (
     documents: rows(".history-document:not(.history-comment)"),
     comments: rows(".history-comment"),
   };
+};
+
+/**
+ * 승부예측 참여 현황을 가져옴
+ *
+ * @param pk 승부예측 번호
+ * @param o_win 선택지 값 + 1 (선택지 0 → "1"). "0"이면 모든 선택지
+ * @param page 페이지 (한 페이지에 100명)
+ */
+export const fetchPredictionPollList = async (
+  pk: string,
+  o_win: string,
+  page = 1,
+): Promise<PredictionPollList> => {
+  const res = await pageFetch(`${urls.BASE_URL}/?act=getPpList`, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "x-requested-with": "XMLHttpRequest",
+      "content-type": "application/json",
+    },
+    credentials: "include",
+    body: new URLSearchParams({
+      pk: pk,
+      o_win: o_win,
+      page: String(page),
+      module: "pp",
+      act: "getPpList",
+    }),
+  });
+  if (!res.ok) throw new Error("승부예측 목록을 불러오지 못했습니다");
+
+  const data: PredictionPollList = await res.json();
+  if (data.error !== 0) throw new Error(data.message);
+  return data;
+};
+
+/**
+ * 승부예측 참여하기
+ *
+ * @param post 승부예측이 있는 게시글 (referrer용)
+ * @param pk 승부예측 번호
+ * @param option 고른 선택지 값 (참여 현황의 o_win과 달리 +1 하지 않음)
+ * @param bet 걸 잉여력
+ */
+export const betPredictionPoll = async (
+  post: PostData,
+  pk: string,
+  option: string,
+  bet: number,
+): Promise<PredictionPollBetResult> => {
+  // 브라우저가 보내는 것과 같은 파라미터, 같은 순서
+  const params = new URLSearchParams({
+    pk,
+    o: option,
+    bet: String(bet),
+    module: "pp",
+    act: "procPpBet",
+  });
+  const res = await pageFetch(`${urls.BASE_URL}/?act=procPpBet`, {
+    method: "POST",
+    headers: {
+      accept: "application/json, text/javascript, */*; q=0.01",
+      "content-type": "application/json",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    credentials: "include",
+    referrer: post.url,
+    body: params.toString(),
+  });
+  if (!res.ok) throw new Error("승부예측에 참여하지 못했습니다");
+
+  // 실패해도 HTTP 200에 error가 0이 아닌 값으로 옴
+  const data: PredictionPollBetResult = await res.json();
+  if (data.error !== 0) throw new Error(data.message);
+  return data;
+};
+
+/**
+ * 핫딜 글 아래 "유사한 쿠팡/지마켓 상품" 목록.
+ * 페이지 HTML에는 빈 <ul>만 있고 사이트도 이 요청으로 채움
+ * (act 이름의 Releavnt 오타는 사이트 그대로)
+ */
+export const fetchRelatedProducts = async (
+  post: PostData,
+): Promise<RelatedProduct[]> => {
+  const act = "dispFmhotdealReleavntProductListFromAD";
+  const params = new URLSearchParams({
+    document_srl: post.docId,
+    module: "fmhotdeal",
+    act,
+  });
+  const res = await pageFetch(`${urls.BASE_URL}/?act=${act}`, {
+    method: "POST",
+    headers: {
+      accept: "application/json, text/javascript, */*; q=0.01",
+      "content-type": "application/json",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    credentials: "include",
+    referrer: post.url,
+    body: params.toString(),
+  });
+  if (!res.ok) throw new Error("관련 상품을 불러오지 못했습니다");
+
+  const data: RelatedProductsResult = await res.json();
+  if (data.error !== 0) throw new Error(data.message);
+  return data.product_list ?? [];
 };

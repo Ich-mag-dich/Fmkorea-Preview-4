@@ -2,6 +2,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { usePortalContainer } from "@/hooks/use-portal-container";
 import { usePost } from "@/hooks/use-post";
 import { useVotePost } from "@/hooks/use-vote-post";
+import { useBetPredictionPoll } from "@/hooks/use-bet-prediction-poll";
 import { useStorageItem } from "@/hooks/use-storage-item";
 import { previewWidthItem } from "@/lib/settings";
 import { useEffect, useRef, type CSSProperties } from "react";
@@ -28,6 +29,7 @@ function PreviewModal({
   const popupRef = useRef<HTMLDivElement>(null);
   const commentsRef = useRef<HTMLDivElement>(null);
   const vote = useVotePost(href);
+  const bet = useBetPredictionPoll(href);
   const [previewWidth] = useStorageItem(previewWidthItem);
 
   // scrollOutside 모드라 실제로 스크롤되는 건 창을 감싼 Viewport
@@ -90,6 +92,10 @@ function PreviewModal({
             <PostView
               post={data.PostData}
               onVote={type => vote.mutate({ post: data.PostData, type })}
+              onBet={(pk, option, amount) =>
+                bet.mutate({ post: data.PostData, pk, option, bet: amount })
+              }
+              bettingPk={bet.isPending ? bet.variables.pk : null}
             />
             <div ref={commentsRef}>
               <CommentSection

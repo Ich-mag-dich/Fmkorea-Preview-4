@@ -1,6 +1,7 @@
 import { getDocumentSrl, urls } from "./api/urls";
 import { absolutizeMedia, cleanContent } from "./media";
 import { prepareEmbeds } from "./embed";
+import { parsePredictionPolls, removePredictionPolls } from "./prediction-poll";
 import type { CommentData, PostData } from "./types";
 
 /**
@@ -24,23 +25,23 @@ export const extractAuthorText = (memberPlate: Element | null): string => {
  * @returns 본문 HTML 문자열
  */
 const extractContentHtml = (doc: Document): string => {
-  let contentEl: Element | null = null;
+  const rdBody = doc.querySelector(".rd_body");
+  const hotdealTable = doc.querySelector("table.hotdeal_table");
 
-  // 핫딜 처리
-  if (doc.querySelector(".hotdeal_table")) {
-    const parent = doc.querySelector(".hotdeal_url")?.parentElement;
-    const rdBody = doc.querySelector(".rd_body");
-    if (parent && rdBody) {
-      parent.appendChild(rdBody);
-      contentEl = parent;
-    }
+  let contentEl: Element | null;
+  if (hotdealTable && rdBody) {
+    // 핫딜 정보 표(링크/쇼핑몰/가격...)는 본문(.rd_body) 밖 머리글 쪽에 있어서
+    // 본문 맨 앞으로 옮겨 같이 정리함.
+    // 표 안 칸마다 .xe_content가 있으므로 .xe_content 대신 .rd_body 전체를 씀
+    rdBody.prepend(hotdealTable);
+    contentEl = rdBody;
+  } else {
+    contentEl = doc.querySelector(".xe_content") ?? rdBody;
   }
-
-  contentEl ??=
-    doc.querySelector(".xe_content") ?? doc.querySelector(".rd_body");
 
   if (!contentEl) return "<p>내용을 불러올 수 없습니다.</p>";
 
+  removePredictionPolls(contentEl);
   cleanContent(contentEl);
   contentEl.querySelector(".document_address")?.remove();
   return contentEl.innerHTML;
@@ -203,6 +204,9 @@ export const parsePost = (url: string, doc: Document): PostData => {
     }
   }
 
+  // 본문 정리(extractContentHtml)보다 먼저 읽어야 함
+  const predictionPolls = parsePredictionPolls(doc);
+
   const postData: PostData = {
     title:
       doc.querySelector(".np_18px_span")?.textContent?.trim() ?? "제목 없음",
@@ -244,10 +248,43 @@ export const parsePost = (url: string, doc: Document): PostData => {
     commentPage: pagination.currentPage,
     totalCommentPages: pagination.totalPages,
     historyParams: parseHistoryParams(doc),
+    predictionPolls,
+    relatedHotdeals: parseRelatedHotdeals(doc),
+    hasRelatedProducts: !!doc.querySelector("ul.relevant_products_from_ad"),
   };
 
   return postData;
 };
+
+/**
+ * 핫딜 글 본문 아래(.rd_body 밖)의 "유사한 최근 6개월 핫딜들" 목록을 읽음
+ * <li class="list"><a href="...">[조마샵] <span>상품명</span></a>
+ *   <span class="price">가격 : <span>189$</span></span>
+ *   <span class="regdate">등록일 : <span>2026-10-06</span></span></li>
+ */
+const parseRelatedHotdeals = (doc: Document): PostData["relatedHotdeals"] =>
+  Array.from(doc.querySelectorAll("ul.relevant_hotdeals > li.list")).flatMap(
+    li => {
+      const a = li.querySelector("a");
+      const href = a?.getAttribute("href");
+      if (!a || !href) return [];
+      const title = a.querySelector("span")?.textContent?.trim() ?? "";
+      // 링크 글자에서 상품명을 뺀 앞부분이 "[조마샵]"
+      const shop = (a.textContent ?? "")
+        .replace(title, "")
+        .trim()
+        .replace(/^\[(.*)\]$/, "$1");
+      return [
+        {
+          url: new URL(href, urls.BASE_URL).href,
+          shop,
+          title,
+          price: li.querySelector(".price > span")?.textContent?.trim() ?? "",
+          date: li.querySelector(".regdate > span")?.textContent?.trim() ?? "",
+        },
+      ];
+    },
+  );
 
 /**
  * 게시판 이력 버튼에서 이력 요청 값을 읽음

@@ -6,6 +6,9 @@ import type { VoteType, PostData } from "@/lib/types";
 import AuthorMenu from "./AuthorMenu";
 import RichContent from "./RichContent";
 import BoardHistory from "./BoardHistory";
+import PredictPoll from "./PredictPoll";
+import RelatedHotdeals from "./RelatedHotdeals";
+import RelatedProducts from "./RelatedProducts";
 
 // 본문은 fmkorea가 준 HTML이라 Tailwind 클래스를 직접 못 붙이므로 하위 태그 선택자로 스타일링
 const contentClassName = cn(
@@ -13,7 +16,8 @@ const contentClassName = cn(
   // style="width:900px" 같은 고정 너비 요소가 창을 넘지 않게. img는 아래 규칙이 더 구체적이라 그쪽이 적용됨
   "[&_*]:max-w-full",
   "[&_p]:my-2",
-  "[&_a]:text-blue-600 [&_a]:underline dark:[&_a]:text-blue-400",
+  // href 없는 <a>(핫딜 종료 신고자 이름 등)는 링크가 아니므로 링크 모양을 주지 않음
+  "[&_a[href]]:text-blue-600 [&_a[href]]:underline dark:[&_a[href]]:text-blue-400",
   "[&_img]:mx-auto [&_img]:my-3 [&_img]:h-auto [&_img]:max-w-[min(600px,100%)] [&_img]:rounded-md",
   "[&_video]:mx-auto [&_video]:my-3 [&_video]:max-h-[480px] [&_video]:max-w-full",
   "[&_iframe]:max-w-full",
@@ -22,9 +26,15 @@ const contentClassName = cn(
 function PostView({
   post,
   onVote,
+  onBet,
+  bettingPk = null,
 }: {
   post: PostData;
   onVote?: (type: VoteType) => void;
+  /** 승부예측 참여하기 */
+  onBet?: (pk: string, option: string, bet: number) => void;
+  /** 참여 요청 중인 승부예측 번호 */
+  bettingPk?: string | null;
 }) {
   return (
     <article className="flex flex-col">
@@ -63,6 +73,24 @@ function PostView({
       </header>
 
       <RichContent html={post.content} className={contentClassName} />
+      {post.predictionPolls.length > 0 && (
+        // 본문(contentClassName)과 같은 좌우 여백
+        <div className="flex flex-col gap-4 px-6">
+          {post.predictionPolls.map(poll => (
+            <PredictPoll
+              key={poll.pk}
+              poll={poll}
+              pending={bettingPk === poll.pk}
+              onSubmit={onBet && ((option, bet) => onBet(poll.pk, option, bet))}
+            />
+          ))}
+        </div>
+      )}
+      {/* 사이트와 같은 순서: 본문 → 유사 핫딜 → 쿠팡/지마켓 상품 → 추천 */}
+      <div className="flex flex-col gap-4 empty:hidden">
+        <RelatedHotdeals items={post.relatedHotdeals} />
+        <RelatedProducts post={post} />
+      </div>
 
       <div className="flex items-center justify-center gap-3 py-6">
         <Button
