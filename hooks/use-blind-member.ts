@@ -2,9 +2,7 @@ import { blindMember, fetchBlindStatus } from "@/lib/api/fmkorea-api";
 import type { BlindType } from "@/lib/types";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-export const blindStatusKey = (memberSrl: string) =>
-  ["blind-status", memberSrl] as const;
+import { queryKeys } from "./query-keys";
 
 const BLIND_LABEL: Record<BlindType, string> = {
   default: "글,댓글",
@@ -42,7 +40,7 @@ export const useBlindMember = ({
 
       // api.php 응답 형식을 믿지 않고, 상태를 다시 조회해서 실제로 바뀌었는지로 판단
       const status = await queryClient.fetchQuery({
-        queryKey: blindStatusKey(memberSrl),
+        queryKey: queryKeys.blindStatus(memberSrl),
         queryFn: () => fetchBlindStatus({ memberSrl, docId, mid }),
       });
       if (status[type] !== (mode === "add")) {
@@ -57,8 +55,8 @@ export const useBlindMember = ({
       );
       // 블라인드된 회원의 글/댓글 표시가 바뀌므로 열려 있는 미리보기를 다시 받음
       if (type === "default") {
-        queryClient.invalidateQueries({ queryKey: ["post"] });
-        queryClient.invalidateQueries({ queryKey: ["comments"] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.posts() });
+        queryClient.invalidateQueries({ queryKey: queryKeys.allComments() });
       }
     },
     onError: error => toast.error(error.message),

@@ -1,10 +1,8 @@
-import { fetchComments, fetchPost, voteComment } from "@/lib/api/fmkorea-api";
+import { voteComment } from "@/lib/api/fmkorea-api";
 import type { CommentData, VoteType } from "@/lib/types";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-type PostQueryData = Awaited<ReturnType<typeof fetchPost>>;
-type CommentsQueryData = Awaited<ReturnType<typeof fetchComments>>;
+import { refetchPostAndComments, updateComments } from "./query-cache";
 
 export const useVoteComment = (href: string) => {
   const queryClient = useQueryClient();
@@ -27,23 +25,13 @@ export const useVoteComment = (href: string) => {
       if (!patch) {
         // 취소인지 실패인지 모르니 메시지만 보여주고 서버에서 다시 받아 개수를 맞춤
         toast.info(result.message);
-        queryClient.invalidateQueries({ queryKey: ["post", href] });
-        queryClient.invalidateQueries({ queryKey: ["comments", href] });
+        refetchPostAndComments(queryClient, href);
         return;
       }
 
       // 베스트 댓글은 상단 사본과 원본이 같은 id라 둘 다 갱신
-      const update = (comments: CommentData[]) =>
-        comments.map(c => (c.id === comment.id ? patch(c) : c));
-
-      // 첫 댓글 페이지는 게시글 쿼리에, 나머지 페이지는 댓글 쿼리에 들어 있음
-      queryClient.setQueryData<PostQueryData>(
-        ["post", href],
-        prev => prev && { ...prev, CommentData: update(prev.CommentData) },
-      );
-      queryClient.setQueriesData<CommentsQueryData>(
-        { queryKey: ["comments", href] },
-        prev => prev && { ...prev, comments: update(prev.comments) },
+      updateComments(queryClient, href, comments =>
+        comments.map(c => (c.id === comment.id ? patch(c) : c)),
       );
       toast.success(result.message);
     },

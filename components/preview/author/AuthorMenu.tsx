@@ -6,7 +6,8 @@ import { urls } from "@/lib/api/urls";
 import { usePortalContainer } from "@/hooks/use-portal-container";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBlindStatus } from "@/lib/api/fmkorea-api";
-import { blindStatusKey, useBlindMember } from "@/hooks/use-blind-member";
+import { useBlindMember } from "@/hooks/use-blind-member";
+import { queryKeys } from "@/hooks/query-keys";
 import type { BlindType } from "@/lib/types";
 import BlindDialog from "./BlindDialog";
 
@@ -30,7 +31,7 @@ function AuthorMenu({
   const [open, setOpen] = useState(false);
 
   const blindStatus = useQuery({
-    queryKey: blindStatusKey(memberSrl),
+    queryKey: queryKeys.blindStatus(memberSrl),
     queryFn: () => fetchBlindStatus({ memberSrl, docId, mid }),
     enabled: open && !!memberSrl, // 메뉴를 열 때만 요청
     staleTime: 30_000, // 바로 다시 열면 재요청 안 함
