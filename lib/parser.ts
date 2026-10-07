@@ -8,6 +8,7 @@ import type {
   CommentData,
   HistoryItem,
   PostData,
+  RelatedHotdeal,
 } from "./types";
 
 /**
@@ -252,11 +253,26 @@ export const parsePost = (url: string, doc: Document): PostData => {
     totalCommentPages: pagination.totalPages,
     historyParams: parseHistoryParams(doc),
     predictionPolls,
-    relatedHotdeals: parseRelatedHotdeals(doc),
-    hasRelatedProducts: !!doc.querySelector("ul.relevant_products_from_ad"),
+    hotdeal: parseHotdeal(doc),
   };
 
   return postData;
+};
+
+/**
+ * 핫딜 글 정보. 정보 표, 유사 핫딜, 쿠팡/지마켓 자리 중 하나라도 있으면 핫딜 글로 본다
+ * (정보 표는 본문 정리 때 본문 안으로 옮겨지지만 문서에는 그대로 남아 있음)
+ */
+const parseHotdeal = (doc: Document): PostData["hotdeal"] => {
+  const relatedDeals = parseRelatedHotdeals(doc);
+  const hasRelatedProducts = !!doc.querySelector(
+    "ul.relevant_products_from_ad",
+  );
+  const hasTable = !!doc.querySelector("table.hotdeal_table");
+  if (!hasTable && relatedDeals.length === 0 && !hasRelatedProducts) {
+    return null;
+  }
+  return { relatedDeals, hasRelatedProducts };
 };
 
 /**
@@ -265,7 +281,7 @@ export const parsePost = (url: string, doc: Document): PostData => {
  *   <span class="price">가격 : <span>189$</span></span>
  *   <span class="regdate">등록일 : <span>2026-10-06</span></span></li>
  */
-const parseRelatedHotdeals = (doc: Document): PostData["relatedHotdeals"] =>
+const parseRelatedHotdeals = (doc: Document): RelatedHotdeal[] =>
   Array.from(doc.querySelectorAll("ul.relevant_hotdeals > li.list")).flatMap(
     li => {
       const a = li.querySelector("a");

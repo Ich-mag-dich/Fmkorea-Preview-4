@@ -1,6 +1,7 @@
 /** 핫딜: 글 아래 "유사한 쿠팡/지마켓 상품" */
-import type { PostData, RelatedProduct, RelatedProductsResult } from "../types";
+import type { PostData } from "../types";
 import { postAct, readJson } from "./request";
+import type { RelatedProduct, RelatedProductsResult } from "./types";
 
 /**
  * 핫딜 글 아래 "유사한 쿠팡/지마켓 상품" 목록.

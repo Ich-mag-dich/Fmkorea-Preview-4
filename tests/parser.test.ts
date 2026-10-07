@@ -42,8 +42,7 @@ describe("parsePost: 일반 글", () => {
   test("핫딜·승부예측이 아닌 글", () => {
     const p = post();
     expect(p.predictionPolls).toEqual([]);
-    expect(p.relatedHotdeals).toEqual([]);
-    expect(p.hasRelatedProducts).toBe(false);
+    expect(p.hotdeal).toBeNull();
   });
 
   test("URL에 글 번호가 없으면 본문 위 글 주소 링크에서 찾음", () => {
@@ -68,9 +67,9 @@ describe("parsePost: 핫딜 글", () => {
   });
 
   test("유사한 최근 6개월 핫딜 목록", () => {
-    const { relatedHotdeals } = post();
-    expect(relatedHotdeals).toHaveLength(41);
-    for (const item of relatedHotdeals) {
+    const relatedDeals = post().hotdeal?.relatedDeals ?? [];
+    expect(relatedDeals).toHaveLength(41);
+    for (const item of relatedDeals) {
       expect(item.url).toMatch(/^https:\/\/www\.fmkorea\.com\/\d+$/);
       expect(item.title).not.toBe("");
       expect(item.shop).not.toMatch(/^\[|\]$/); // 대괄호는 뺌
@@ -79,7 +78,7 @@ describe("parsePost: 핫딜 글", () => {
   });
 
   test("쿠팡/지마켓 상품 자리가 있음 (목록은 따로 요청)", () => {
-    expect(post().hasRelatedProducts).toBe(true);
+    expect(post().hotdeal?.hasRelatedProducts).toBe(true);
   });
 });
 

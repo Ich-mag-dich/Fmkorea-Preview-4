@@ -5,7 +5,8 @@ import {
   parsePredictionPolls,
   removePredictionPolls,
 } from "@/lib/prediction-poll";
-import type { PredictionPoll, PredictionPollBetResult } from "@/lib/types";
+import type { PredictionPollBetResult } from "@/lib/api/types";
+import type { PredictionPoll } from "@/lib/types";
 import { loadPage, readFixture } from "./helpers";
 
 describe("parsePredictionPolls", () => {

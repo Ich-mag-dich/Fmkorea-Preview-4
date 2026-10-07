@@ -1,7 +1,8 @@
 /** 댓글: 댓글 페이지 받기, 추천/비추천, 작성 */
 import { parseComment, parsePagination } from "../parser";
-import type { CommentData, VoteResult, VoteType } from "../types";
+import type { CommentData, VoteType } from "../types";
 import { fetchPage, postAct, postXml, readXml } from "./request";
+import type { VoteResult } from "./types";
 import { urls, withCommentPage } from "./urls";
 
 /** 게시글의 n번째 댓글 페이지 (첫 페이지는 fetchPost에 들어 있음) */

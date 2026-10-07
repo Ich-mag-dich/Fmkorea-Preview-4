@@ -54,11 +54,12 @@ lib/
     request.ts       공통 요청 함수 (postAct, postXml, readJson ...)
     post.ts comment.ts member.ts poll.ts hotdeal.ts   기능별 요청
     urls.ts          사이트 주소, 글 번호 추출
+    types.ts         사이트 응답(JSON) 형식
   parser.ts          페이지·응답 HTML/XML → 데이터
   prediction-poll.ts 승부예측 폼 파싱과 참여 결과 반영
   embed.ts           링크 → 영상/SNS 임베드 판별
   sanitize.ts        렌더링 전 HTML 정화 (DOMPurify)
-  types.ts           데이터 타입
+  types.ts           화면에 쓰는 데이터 타입 (PostData 등)
   settings.ts        설정 항목 (확장 저장소)
 tests/
   *.test.ts          Vitest 테스트
@@ -79,7 +80,7 @@ tests/
 사이트 기능 하나(예: 승부예측 참여)를 미리보기에 붙이는 일반적인 순서입니다.
 
 1. **사이트 요청 확인** — 사이트에서 그 기능을 직접 써 보면서 개발자 도구 네트워크 탭으로 요청 주소, 헤더, 본문(파라미터 순서까지), 응답을 확인합니다. 응답 예시는 PR이나 주석에 남겨 두면 다음 사람이 편합니다.
-2. **타입** — 응답과 화면용 데이터 타입을 [lib/types.ts](lib/types.ts)에 추가합니다.
+2. **타입** — 사이트 응답(JSON) 형식은 필드 이름 그대로 [lib/api/types.ts](lib/api/types.ts)에, 파싱해서 화면에 쓰는 데이터 타입은 [lib/types.ts](lib/types.ts)에 추가합니다.
 3. **요청 함수** — 맞는 `lib/api/<기능>.ts`에 함수를 만듭니다. 대부분 아래 형태로 충분합니다.
 
    ```ts

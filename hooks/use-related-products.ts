@@ -8,6 +8,6 @@ export const useRelatedProducts = (post: PostData) =>
   useQuery({
     queryKey: queryKeys.relatedProducts(post.docId),
     queryFn: () => fetchRelatedProducts(post),
-    enabled: post.hasRelatedProducts,
+    enabled: post.hotdeal?.hasRelatedProducts ?? false,
     staleTime: 5 * 60_000,
   });

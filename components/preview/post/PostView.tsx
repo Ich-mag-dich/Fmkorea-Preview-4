@@ -74,10 +74,12 @@ function PostView() {
         </div>
       )}
       {/* 사이트와 같은 순서: 본문 → 유사 핫딜 → 쿠팡/지마켓 상품 → 추천 */}
-      <div className="flex flex-col gap-4 empty:hidden">
-        <RelatedHotdeals items={post.relatedHotdeals} />
-        <RelatedProducts post={post} />
-      </div>
+      {post.hotdeal && (
+        <div className="flex flex-col gap-4 empty:hidden">
+          <RelatedHotdeals items={post.hotdeal.relatedDeals} />
+          <RelatedProducts post={post} />
+        </div>
+      )}
 
       <div className="flex items-center justify-center gap-3 py-6">
         <Button
