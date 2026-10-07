@@ -25,4 +25,7 @@ web-ext.config.ts
 *.sln
 *.sw?
 
-.claude/
+# Claude Code: 개인 설정(settings.local.json 등)은 빼고, 같이 쓰는 설정과 훅만 커밋
+.claude/*
+!.claude/settings.json
+!.claude/hooks/

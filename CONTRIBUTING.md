@@ -122,7 +122,8 @@ tests/
 
 ## 코드 스타일
 
-- 포맷은 Prettier가 맞춥니다. 편집기에서 저장 시 포맷을 켜 두거나 `npx prettier --write <파일>`을 실행하세요.
+- 포맷은 Prettier가 맞춥니다. 편집기에서 저장 시 포맷을 켜 두거나 `npx prettier --write <파일>`을 실행하세요. Claude Code로 작업하면 `.claude/settings.json`의 훅이 고친 파일에 자동으로 돌립니다.
+  - 긴 조건은 연산자(`&&`, `+`)를 줄 앞에 두고, 여러 단계 삼항식은 `? :`를 줄 앞에 맞춥니다 (`.prettierrc`의 `experimentalOperatorPosition`, `experimentalTernaries`).
 - 주석은 한국어로, "무엇"보다 "왜"를 적습니다. 특히 사이트 동작 때문에 이상해 보이는 코드에는 이유를 꼭 남깁니다.
 - 파일 이름: 컴포넌트는 `PascalCase.tsx`, 훅은 `use-kebab-case.ts`, 그 외는 `kebab-case.ts`.
 - import는 다른 폴더면 `@/` 경로, 같은 기능 폴더 안이면 `./` 상대 경로를 씁니다.

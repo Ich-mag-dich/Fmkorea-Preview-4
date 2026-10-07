@@ -12,7 +12,7 @@ Claude Code는 [CLAUDE.md](CLAUDE.md)가 이 파일을 불러온다.
 - 사용자 답변, 코드 주석, 문서는 한국어로 쓴다.
 - 커밋 메시지는 Conventional Commits 접두어(`feat:`, `fix:` …) + 한국어 내용. 2026년 10월 이전 기록은 영어지만 따라 하지 않는다.
 - 패키지 매니저는 Bun. 스크립트는 항상 `bun run <이름>`으로 실행한다 (`bun build`는 Bun 자체 명령).
-- 코드를 바꾼 뒤에는 바꾼 파일에 `npx prettier --write`, 그다음 `bun run compile`, `bun run test`, `bun run build`가 통과하는지 확인한다.
+- 코드를 바꾼 뒤에는 바꾼 파일에 `npx prettier --write`, 그다음 `bun run compile`, `bun run test`, `bun run build`가 통과하는지 확인한다. (Claude Code는 `.claude/settings.json` 훅이 고친 파일에 Prettier를 자동으로 돌린다. 저장소 전체에 `prettier --write .`를 돌리지 않는다)
 - 파서(`lib/parser.ts`, `lib/prediction-poll.ts` 등)를 바꾸면 `tests/`에 테스트도 추가·수정한다. 사이트 HTML이 필요하면 사용자에게 저장을 부탁하고, 로그인한 채 저장한 파일은 커밋 전에 `bun run fixtures:sanitize`로 개인 정보를 지운다 ([tests/fixtures/README.md](tests/fixtures/README.md)).
 - 브라우저 화면은 직접 볼 수 없다. UI 변경은 "화면 확인은 못 함"이라고 알리고, 사용자가 스크린샷으로 확인하게 한다.
 
