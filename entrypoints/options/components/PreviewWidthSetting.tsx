@@ -54,8 +54,8 @@ export default function PreviewWidthSetting() {
             aria-pressed={draft === value}
             className={cn(
               "tabular-nums",
-              draft === value &&
-                "border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-50 dark:bg-blue-500/15 dark:text-blue-300",
+              draft === value
+                && "border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-50 dark:bg-blue-500/15 dark:text-blue-300",
             )}
             onClick={() => commit(value)}>
             {label}

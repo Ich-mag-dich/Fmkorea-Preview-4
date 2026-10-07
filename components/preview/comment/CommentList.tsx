@@ -46,13 +46,12 @@ function CommentList({
         <span className="text-blue-600 dark:text-blue-400">{commentCount}</span>
       </h3>
 
-      {comments.length === 0 ? (
+      {/* 목록의 구분선은 CommentItem이 들여쓴 내용 쪽에만 그림 (가이드 라인을 가로지르지 않게) */}
+      {comments.length === 0 ?
         <p className="py-10 text-center text-xl font-bold text-muted-foreground">
           댓글이 없습니다. ;ㅅ;
         </p>
-      ) : (
-        // 구분선은 CommentItem이 들여쓴 내용 쪽에만 그림 (가이드 라인을 가로지르지 않게)
-        <ul className="flex flex-col">
+      : <ul className="flex flex-col">
           {comments.map(comment => {
             const key = itemKey(comment);
             const close = () => setReplyingKey(null);
@@ -63,8 +62,8 @@ function CommentList({
                 onVote={onVote}
                 isReplying={replyingKey === key}
                 onReply={
-                  onReply &&
-                  (() => setReplyingKey(prev => (prev === key ? null : key)))
+                  onReply
+                  && (() => setReplyingKey(prev => (prev === key ? null : key)))
                 }
                 replyForm={
                   onReply && (
@@ -87,7 +86,7 @@ function CommentList({
             );
           })}
         </ul>
-      )}
+      }
     </section>
   );
 }

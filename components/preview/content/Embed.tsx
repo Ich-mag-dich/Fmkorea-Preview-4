@@ -15,9 +15,9 @@ function SourceLink({ info }: { info: EmbedInfo }) {
       rel="noopener noreferrer"
       // 본문 링크 스타일([&_a]:underline 등)을 덮어씀
       className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground! no-underline! hover:text-foreground! hover:underline!">
-      {info.kind === "image"
-        ? "원본 이미지 열기"
-        : `${PROVIDER_LABEL[info.provider]}에서 보기`}
+      {info.kind === "image" ?
+        "원본 이미지 열기"
+      : `${PROVIDER_LABEL[info.provider]}에서 보기`}
       <ExternalLinkIcon className="size-3" />
     </a>
   );
@@ -81,11 +81,11 @@ function VideoEmbed({
         // 우선순위를 올려야 최대 폭이 실제로 적용됨
         className={cn(
           "relative block w-full overflow-hidden rounded-lg bg-black",
-          info.vertical
-            ? cn("aspect-9/16", compact ? "max-w-48!" : "max-w-80!")
-            : cn("aspect-video", compact ? "max-w-100!" : "max-w-160!"),
+          info.vertical ?
+            cn("aspect-9/16", compact ? "max-w-48!" : "max-w-80!")
+          : cn("aspect-video", compact ? "max-w-100!" : "max-w-160!"),
         )}>
-        {playing ? (
+        {playing ?
           <iframe
             src={info.src}
             title={`${label} 영상`}
@@ -93,22 +93,20 @@ function VideoEmbed({
             allowFullScreen
             className="absolute inset-0 size-full border-0"
           />
-        ) : (
-          <button
+        : <button
             type="button"
             aria-label={`${label} 영상 재생`}
             onClick={() => setPlaying(true)}
             className="group/play absolute inset-0 flex size-full items-center justify-center">
-            {info.thumbnail ? (
+            {info.thumbnail ?
               <img
                 src={info.thumbnail}
                 alt=""
                 // 본문 img 스타일(가운데 정렬, 최대 600px 등)을 덮어씀
                 className="absolute inset-0 m-0! size-full! max-w-none! rounded-none! object-cover"
               />
-            ) : (
-              <span className="absolute inset-0 bg-linear-to-br from-neutral-700 to-neutral-950" />
-            )}
+            : <span className="absolute inset-0 bg-linear-to-br from-neutral-700 to-neutral-950" />
+            }
             <span className="absolute inset-0 bg-black/20 transition-colors group-hover/play:bg-black/35" />
             <span className="relative flex size-14 items-center justify-center rounded-full bg-black/60 text-white shadow-lg backdrop-blur-sm transition-transform group-hover/play:scale-110">
               <PlayIcon className="ml-0.5 size-6 fill-current" />
@@ -117,7 +115,7 @@ function VideoEmbed({
               {label}
             </span>
           </button>
-        )}
+        }
       </span>
       <SourceLink info={info} />
     </span>

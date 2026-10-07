@@ -26,8 +26,8 @@ export default function FontOption({
       className={cn(
         "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-colors",
         "hover:bg-muted/60 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent",
-        selected &&
-          "border-blue-500 bg-blue-50 ring-1 ring-blue-500 hover:bg-blue-50 dark:bg-blue-500/15 dark:hover:bg-blue-500/15",
+        selected
+          && "border-blue-500 bg-blue-50 ring-1 ring-blue-500 hover:bg-blue-50 dark:bg-blue-500/15 dark:hover:bg-blue-500/15",
       )}>
       <span className="flex w-full items-center gap-1.5 text-sm font-medium">
         {label}

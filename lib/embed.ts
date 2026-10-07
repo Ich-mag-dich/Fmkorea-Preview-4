@@ -98,9 +98,8 @@ export const parseEmbed = (raw: string): EmbedInfo | null => {
     return null;
   }
   // fmkorea 외부 링크 중계 주소면 실제 주소로 (link.fmkorea.org/link.php?url=...)
-  const relayed = u.hostname.endsWith("fmkorea.org")
-    ? u.searchParams.get("url")
-    : null;
+  const relayed =
+    u.hostname.endsWith("fmkorea.org") ? u.searchParams.get("url") : null;
   if (relayed) return parseEmbed(relayed);
   if (u.protocol !== "https:" && u.protocol !== "http:") return null;
 
@@ -122,8 +121,8 @@ export const parseEmbed = (raw: string): EmbedInfo | null => {
   }
 
   const soop =
-    /^vod\.(sooplive\.com|afreecatv\.com)$/.test(host) &&
-    path.match(/^\/player\/(\d+)/);
+    /^vod\.(sooplive\.com|afreecatv\.com)$/.test(host)
+    && path.match(/^\/player\/(\d+)/);
   if (soop) {
     return {
       kind: "video",
@@ -160,8 +159,8 @@ export const parseEmbed = (raw: string): EmbedInfo | null => {
 
   // 이미지 파일 주소. X 이미지처럼 확장자 대신 ?format=jpg로 오는 경우도 포함
   const isImage =
-    IMAGE_EXT.test(path) ||
-    IMAGE_FORMAT.test(u.searchParams.get("format") ?? "");
+    IMAGE_EXT.test(path)
+    || IMAGE_FORMAT.test(u.searchParams.get("format") ?? "");
   if (isImage) {
     return {
       kind: "image",
@@ -195,8 +194,8 @@ export const isAllowedIframeSrc = (src: string): boolean => {
   try {
     const u = new URL(src);
     return (
-      u.protocol === "https:" &&
-      IFRAME_ALLOWED_HOSTS.some(
+      u.protocol === "https:"
+      && IFRAME_ALLOWED_HOSTS.some(
         h => u.hostname === h || u.hostname.endsWith(`.${h}`),
       )
     );
@@ -228,9 +227,9 @@ const collectTextNodes = (root: Element): Text[] => {
     NodeFilter.SHOW_TEXT,
     {
       acceptNode: node =>
-        node.parentElement?.closest("a, script, style, iframe, textarea")
-          ? NodeFilter.FILTER_REJECT
-          : NodeFilter.FILTER_ACCEPT,
+        node.parentElement?.closest("a, script, style, iframe, textarea") ?
+          NodeFilter.FILTER_REJECT
+        : NodeFilter.FILTER_ACCEPT,
     },
   );
   const nodes: Text[] = [];
@@ -296,9 +295,9 @@ export const prepareEmbeds = (root: Element): void => {
       if (link.start > last) frag.append(text.slice(last, link.start));
       const info = claim(link.href);
       frag.append(
-        info
-          ? placeholder(doc, info.url)
-          : externalLink(doc, link.href, link.value),
+        info ?
+          placeholder(doc, info.url)
+        : externalLink(doc, link.href, link.value),
       );
       last = link.end;
     }

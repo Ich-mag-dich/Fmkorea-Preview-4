@@ -17,7 +17,9 @@ export default function VideoVolumeSetting() {
     useSliderSetting(videoVolumeItem);
   const percent = Math.round(draft * 100);
   const VolumeIcon =
-    percent === 0 ? VolumeXIcon : percent < 50 ? Volume1Icon : Volume2Icon;
+    percent === 0 ? VolumeXIcon
+    : percent < 50 ? Volume1Icon
+    : Volume2Icon;
 
   return (
     <Card

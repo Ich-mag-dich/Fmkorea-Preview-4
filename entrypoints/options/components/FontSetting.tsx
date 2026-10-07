@@ -86,19 +86,18 @@ export default function FontSetting() {
           <p
             className={cn(
               "text-xs",
-              customInstalled
-                ? "text-muted-foreground"
-                : "text-red-600 dark:text-red-400",
+              customInstalled ?
+                "text-muted-foreground"
+              : "text-red-600 dark:text-red-400",
             )}>
-            {customInstalled ? (
+            {customInstalled ?
               <span
                 className="text-base text-foreground"
                 style={{ fontFamily: toFontFamily(customName) ?? undefined }}>
                 {FONT_SAMPLE}
               </span>
-            ) : (
-              "이 이름의 글꼴을 찾을 수 없습니다. 설치 여부와 이름을 확인해 주세요."
-            )}
+            : "이 이름의 글꼴을 찾을 수 없습니다. 설치 여부와 이름을 확인해 주세요."
+            }
           </p>
         )}
       </form>

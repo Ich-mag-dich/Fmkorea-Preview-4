@@ -61,9 +61,9 @@ function AuthorMenu({
         label: blinded ? `${label} 취소` : label,
         // 추가는 메모 입력창을 거치고, 해제는 바로 처리
         onSelect: () =>
-          blinded
-            ? blind.mutate({ type, mode: "cancel" })
-            : setBlindDialog({ open: true, type }),
+          blinded ?
+            blind.mutate({ type, mode: "cancel" })
+          : setBlindDialog({ open: true, type }),
       },
     ];
   };

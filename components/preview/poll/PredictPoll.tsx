@@ -74,7 +74,7 @@ function PredictPoll({ poll }: { poll: PredictionPoll }) {
         ))}
       </div>
 
-      {bet ? (
+      {bet ?
         <div className="flex flex-wrap items-center gap-2 border-t bg-muted/40 px-4 py-3">
           <label htmlFor={`${id}-bet`} className="font-medium">
             잉여력
@@ -110,19 +110,19 @@ function PredictPoll({ poll }: { poll: PredictionPoll }) {
           </Button>
           {!amountValid && (
             <p className="w-full text-xs text-destructive">
-              {bet.myPoint < bet.min
-                ? `잉여력이 부족합니다. (최소 ${formatNumber(bet.min)})`
-                : `${formatNumber(bet.min)} ~ ${formatNumber(bet.max)} 사이로 입력하세요.`}
+              {bet.myPoint < bet.min ?
+                `잉여력이 부족합니다. (최소 ${formatNumber(bet.min)})`
+              : `${formatNumber(bet.min)} ~ ${formatNumber(bet.max)} 사이로 입력하세요.`
+              }
             </p>
           )}
         </div>
-      ) : (
-        poll.endMessage && (
+      : poll.endMessage && (
           <p className="border-t bg-muted/40 px-4 py-3 text-center font-medium text-red-600 dark:text-red-400">
             {poll.endMessage}
           </p>
         )
-      )}
+      }
 
       {poll.notices.length > 0 && (
         <ul className="flex flex-col gap-0.5 border-t px-4 py-3 text-xs text-muted-foreground">

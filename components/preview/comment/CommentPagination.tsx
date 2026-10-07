@@ -51,30 +51,28 @@ function CommentPagination({
       </Button>
 
       {getPageItems(currentPage, totalPages).map(item =>
-        typeof item === "number" ? (
+        typeof item === "number" ?
           <Button
             key={item}
             variant={item === currentPage ? "default" : "ghost"}
             size="sm"
             className={
-              "min-w-7 px-1.5 text-gray-500 tabular-nums" +
-              (item === currentPage
-                ? " bg-blue-600 text-white hover:bg-blue-600/90 dark:bg-blue-500"
-                : "")
+              "min-w-7 px-1.5 text-gray-500 tabular-nums"
+              + (item === currentPage ?
+                " bg-blue-600 text-white hover:bg-blue-600/90 dark:bg-blue-500"
+              : "")
             }
             aria-current={item === currentPage ? "page" : undefined}
             // disabled로 막으면 opacity-50이 걸려 현재 페이지 강조가 흐려지므로 클릭만 무시
             onClick={() => item !== currentPage && onChange(item)}>
             {item}
           </Button>
-        ) : (
-          <span
+        : <span
             key={item}
             aria-hidden
             className="w-5 text-center text-sm text-muted-foreground select-none">
             …
-          </span>
-        ),
+          </span>,
       )}
 
       <Button

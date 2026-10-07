@@ -27,12 +27,11 @@ function HistoryList({
         {icon}
         {title}
       </h4>
-      {items.length === 0 ? (
+      {items.length === 0 ?
         <p className="py-4 text-center text-sm text-muted-foreground">
           없습니다
         </p>
-      ) : (
-        <ul className="flex flex-col">
+      : <ul className="flex flex-col">
           {items.map(item => (
             <li key={item.url}>
               <a
@@ -46,8 +45,8 @@ function HistoryList({
                 onClick={e => openInPreview(e, item.url)}
                 className={cn(
                   "flex items-center gap-2 rounded px-1.5 py-1 text-sm transition-colors hover:bg-muted",
-                  item.active &&
-                    "font-semibold text-blue-600 dark:text-blue-400",
+                  item.active
+                    && "font-semibold text-blue-600 dark:text-blue-400",
                 )}>
                 <span className="min-w-0 flex-1 truncate">{item.text}</span>
                 {item.commentCount !== undefined && (
@@ -64,7 +63,7 @@ function HistoryList({
             </li>
           ))}
         </ul>
-      )}
+      }
     </div>
   );
 }
@@ -93,7 +92,7 @@ function BoardHistory({ post }: { post: PostData }) {
 
       {open && (
         <section className="w-full rounded-lg border bg-muted/30 p-4">
-          {isPending ? (
+          {isPending ?
             <div className="grid gap-4 sm:grid-cols-2">
               {[0, 1].map(col => (
                 <div key={col} className="flex flex-col gap-2">
@@ -105,7 +104,7 @@ function BoardHistory({ post }: { post: PostData }) {
                 </div>
               ))}
             </div>
-          ) : isError ? (
+          : isError ?
             <div className="flex flex-col items-center gap-2 py-4 text-sm text-muted-foreground">
               게시판 이력을 불러오지 못했습니다.
               <Button
@@ -117,8 +116,7 @@ function BoardHistory({ post }: { post: PostData }) {
                 다시 시도
               </Button>
             </div>
-          ) : (
-            <>
+          : <>
               {data.summary && (
                 <p className="mb-3 text-center text-xs text-muted-foreground">
                   {data.summary}
@@ -137,7 +135,7 @@ function BoardHistory({ post }: { post: PostData }) {
                 />
               </div>
             </>
-          )}
+          }
         </section>
       )}
     </div>

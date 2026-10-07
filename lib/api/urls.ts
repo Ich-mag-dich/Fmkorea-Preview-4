@@ -34,8 +34,8 @@ export const urls = {
 export const getDocumentSrl = (url: string): string | undefined => {
   const { pathname, searchParams } = new URL(url, urls.BASE_URL);
   return (
-    searchParams.get("document_srl") ??
-    pathname.match(/^\/(?:best\d*\/)?(\d+)/)?.[1]
+    searchParams.get("document_srl")
+    ?? pathname.match(/^\/(?:best\d*\/)?(\d+)/)?.[1]
   );
 };
 

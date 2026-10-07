@@ -49,9 +49,9 @@ export const useBlindMember = ({
     },
     onSuccess: (_, { type, mode }) => {
       toast.success(
-        mode === "add"
-          ? `${BLIND_LABEL[type]} 블라인드했습니다`
-          : `${BLIND_LABEL[type]} 블라인드를 해제했습니다`,
+        mode === "add" ?
+          `${BLIND_LABEL[type]} 블라인드했습니다`
+        : `${BLIND_LABEL[type]} 블라인드를 해제했습니다`,
       );
       // 블라인드된 회원의 글/댓글 표시가 바뀌므로 열려 있는 미리보기를 다시 받음
       if (type === "default") {

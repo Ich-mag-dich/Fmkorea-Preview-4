@@ -43,13 +43,13 @@ function ParticipantList({
 
   return (
     <div className="overflow-hidden rounded-md border bg-background text-xs">
-      {isPending ? (
+      {isPending ?
         <div className="flex flex-col gap-2 p-3">
           {Array.from({ length: 3 }, (_, i) => (
             <Skeleton key={i} className="h-4 w-full" />
           ))}
         </div>
-      ) : isError ? (
+      : isError ?
         <div className="flex flex-col items-center gap-1 p-3 text-xs text-muted-foreground">
           참여 현황을 불러오지 못했습니다.
           <span className="text-destructive">{error.message}</span>
@@ -63,12 +63,11 @@ function ParticipantList({
             다시 시도
           </Button>
         </div>
-      ) : data.length === 0 ? (
+      : data.length === 0 ?
         <p className="p-3 text-center text-xs text-muted-foreground">
           참여한 사람이 없습니다.
         </p>
-      ) : (
-        <div
+      : <div
           ref={scrollRef}
           className={cn(
             "max-h-72 scrollbar-thin overflow-y-auto transition-opacity",
@@ -112,7 +111,7 @@ function ParticipantList({
             </tbody>
           </table>
         </div>
-      )}
+      }
 
       {totalPages > 1 && !isError && (
         <div className="flex items-center justify-center gap-2 border-t py-1 tabular-nums">

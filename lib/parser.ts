@@ -82,8 +82,8 @@ export const parsePagination = (
   const pgDiv =
     allPgDivs.find(
       div =>
-        !!div.closest("#comment") ||
-        Array.from(div.querySelectorAll("a")).some(a =>
+        !!div.closest("#comment")
+        || Array.from(div.querySelectorAll("a")).some(a =>
           a.getAttribute("href")?.includes("cpage="),
         ),
     ) ?? null;
@@ -91,8 +91,8 @@ export const parsePagination = (
   if (!pgDiv) return { currentPage: 1, totalPages: 1 };
 
   const currentPage =
-    parseInt(pgDiv.querySelector("strong.this")?.textContent?.trim() ?? "1") ||
-    1;
+    parseInt(pgDiv.querySelector("strong.this")?.textContent?.trim() ?? "1")
+    || 1;
 
   const nums = Array.from(pgDiv.querySelectorAll("a:not(.direction)"))
     .map(a => parseInt(a.textContent?.trim() ?? ""))
@@ -227,14 +227,12 @@ export const parsePost = (url: string, doc: Document): PostData => {
         .find(c => /^member_\d+$/.test(c))
         ?.replace("member_", "") ?? "",
     date:
-      doc.querySelector("span.date.m_no")?.textContent?.trim() ??
-      doc.querySelector(".date")?.textContent?.trim() ??
-      "",
+      doc.querySelector("span.date.m_no")?.textContent?.trim()
+      ?? doc.querySelector(".date")?.textContent?.trim()
+      ?? "",
     views:
-      doc
-        .querySelector("div.side.fr")
-        ?.textContent?.trim()
-        .replace(/\s+/g, " ") ?? "",
+      doc.querySelector("div.side.fr")?.textContent?.trim().replace(/\s+/g, " ")
+      ?? "",
     docId,
     url,
     mid: doc.querySelector<HTMLInputElement>("input[name='mid']")?.value ?? "",
@@ -388,8 +386,8 @@ export const parseBlindStatus = (
       status.message = blinded;
     } else if (kind === "0" || kind === "1") {
       status[kind === "0" ? "default" : "message"] =
-        item.querySelector("str")?.textContent?.trim().endsWith("취소") ??
-        false;
+        item.querySelector("str")?.textContent?.trim().endsWith("취소")
+        ?? false;
     }
   }
   return status;

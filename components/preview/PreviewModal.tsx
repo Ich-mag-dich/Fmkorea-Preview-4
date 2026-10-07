@@ -80,13 +80,12 @@ function PreviewModal({
         // 최대 너비는 옵션 페이지에서 설정. 화면이 더 좁으면 w-full이라 화면에 맞춰짐
         style={{ "--preview-width": `${previewWidth}px` } as CSSProperties}
         className="grid-cols-[minmax(0,1fr)] gap-0 p-8 shadow-2xl ring-0 sm:max-w-(--preview-width)">
-        {isPending ? (
+        {isPending ?
           <PreviewSkeleton />
-        ) : isError ? (
+        : isError ?
           <PreviewError href={href} onRetry={refetch} retrying={isFetching} />
-        ) : (
           // 본문·댓글 안의 컴포넌트는 이 값으로 지금 보는 글을 꺼내 씀 (props로 안 넘김)
-          <PreviewPostContext value={{ href, post: data.PostData }}>
+        : <PreviewPostContext value={{ href, post: data.PostData }}>
             <PostView />
             <div ref={commentsRef}>
               <CommentSection
@@ -101,7 +100,7 @@ function PreviewModal({
               />
             </div>
           </PreviewPostContext>
-        )}
+        }
         <PreviewRemote
           onTop={scrollToTop}
           onComments={data ? scrollToComments : undefined}

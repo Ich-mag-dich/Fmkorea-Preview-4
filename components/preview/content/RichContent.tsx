@@ -28,9 +28,9 @@ function RichContent({
     );
     // 임베드 없는 댓글이 대부분이라, 없을 땐 같은 빈 배열을 유지해서 재렌더링을 막음
     setSlots(prev =>
-      nodes.length === 0 && prev.length === 0
-        ? prev
-        : nodes.map(node => ({ node, url: node.dataset.embed ?? "" })),
+      nodes.length === 0 && prev.length === 0 ?
+        prev
+      : nodes.map(node => ({ node, url: node.dataset.embed ?? "" })),
     );
   }, [sanitized]);
 

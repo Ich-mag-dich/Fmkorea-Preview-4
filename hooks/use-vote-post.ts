@@ -15,8 +15,8 @@ export const useVotePost = (href: string) => {
         ...post,
         // 서버가 준 최신 추천 수가 있으면 그걸 쓰고, 없으면 ±1
         voteCount:
-          result.voted_blamed_count ??
-          post.voteCount + (type === "up" ? 1 : -1),
+          result.voted_blamed_count
+          ?? post.voteCount + (type === "up" ? 1 : -1),
       }));
       toast.success(result.message);
     },
