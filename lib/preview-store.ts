@@ -9,6 +9,9 @@ let current: string | null = null;
 // 원래 페이지로 돌아와도 미리보기 항목으로 착각해 그 페이지 주소로 미리보기를 다시 열었음
 let entryHref: string | null = null;
 
+// 미리보기를 연 페이지 주소 (목록 등). 주소창이 글 주소로 바뀐 뒤에도 원래 페이지를 알기 위해 둠
+let openerHref: string | null = null;
+
 // X/ESC/바깥 클릭으로 닫으며 부른 history.back()의 popstate를 기다리는 중인지
 let backPending = false;
 
@@ -29,6 +32,7 @@ export const previewStore = {
       if (current) {
         history.replaceState(null, "", href);
       } else {
+        openerHref = location.href;
         history.pushState(null, "", href);
       }
       entryHref = location.href;
@@ -59,6 +63,7 @@ export const previewStore = {
     }
   },
   get: () => current,
+  getOpener: () => openerHref,
   subscribe(l: Listener) {
     listeners.add(l);
     return () => listeners.delete(l);

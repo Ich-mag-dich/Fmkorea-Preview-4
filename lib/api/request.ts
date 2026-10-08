@@ -120,8 +120,9 @@ export const readXml = async (
 export const fetchPage = async (
   url: string,
   failMessage: string,
+  { referrer }: RequestOptions = {},
 ): Promise<Document> => {
-  const res = await fetch(url);
+  const res = await fetch(url, { referrer });
   if (!res.ok) throw new Error(`${failMessage} (${res.status})`);
   return new DOMParser().parseFromString(await res.text(), "text/html");
 };
