@@ -1,4 +1,5 @@
-# 수동으로 실행해서 Chrome/Firefox용 zip을 빌드하고 GitHub 릴리즈에 올림
+# 수동으로 실행해서 Chrome/Firefox용 zip을 빌드하고 GitHub 릴리즈에 올림.
+# release면 Firefox Add-ons와 Chrome 웹 스토어에도 제출함
 # 태그는 package.json의 version으로 정해짐 (예: 4.0.1 → v4.0.1)
 name: Release
 
@@ -6,13 +7,17 @@ on:
   workflow_dispatch:
     inputs:
       type:
-        description: "릴리즈 종류 (draft는 태그 없이 초안만 만들고, 공개할 때 태그가 생김)"
+        description: "릴리즈 종류 (release만 스토어에 제출. draft는 태그 없이 초안만 만들고, 공개할 때 태그가 생김)"
         type: choice
         options:
           - release
           - prerelease
           - draft
         default: release
+      dry_run:
+        description: "스토어 키만 확인 (GitHub 릴리즈와 스토어 제출은 하지 않음)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write # 태그와 릴리즈 생성
@@ -49,6 +54,7 @@ jobs:
         run: echo "tag=v$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
 
       - name: Check tag is new
+        if: ${{ !inputs.dry_run }}
         env:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
@@ -58,11 +64,13 @@ jobs:
           fi
 
       - name: Build zips
+        id: zips
         run: |
           bun run zip
           bun run zip:firefox
 
       - name: Write release notes
+        if: ${{ !inputs.dry_run }}
         env:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
@@ -71,6 +79,8 @@ jobs:
           cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Create release
+        id: release
+        if: ${{ !inputs.dry_run }}
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
@@ -89,3 +99,35 @@ jobs:
             --title "$TAG" \
             --notes-file release-notes.md \
             "${flags[@]}"
+
+      # 스토어 제출 (wxt submit = publish-browser-extension). dry_run이면 키 확인용
+      # 읽기 요청만 보내고 업로드·제출은 하지 않음
+      - name: Submit to Firefox Add-ons
+        if: ${{ inputs.dry_run || inputs.type == 'release' }}
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          FIREFOX_EXTENSION_ID: fmkorea-preview@extension
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+        # AMO는 번들된 코드를 심사하려고 소스 zip도 받음
+        run: |
+          bunx wxt submit \
+            --firefox-zip .output/*-firefox.zip \
+            --firefox-sources-zip .output/*-sources.zip
+
+      # Chrome은 이전 버전이 심사 중이면 새 버전을 올릴 수 없어서 여기서 실패함.
+      # 그때 심사를 취소하지 않도록 CHROME_CANCEL_PENDING은 켜지 않음 (취소하면 대기 순서가 처음부터).
+      # Firefox 제출이 실패해도 Chrome은 따로 시도
+      - name: Submit to Chrome Web Store
+        if: >-
+          ${{ !cancelled() && steps.zips.outcome == 'success'
+          && (inputs.dry_run || (inputs.type == 'release' && steps.release.outcome == 'success')) }}
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          # v1.1(OAuth)은 2026-10-15에 종료되어 v2(서비스 계정)를 씀
+          CHROME_API_VERSION: v2
+          CHROME_EXTENSION_ID: bboddojafohhhnbdifnlmmmbfngjldhf
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+          CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+          CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}
+        run: bunx wxt submit --chrome-zip .output/*-chrome.zip

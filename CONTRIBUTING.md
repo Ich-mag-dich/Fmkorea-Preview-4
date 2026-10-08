@@ -173,7 +173,9 @@ tests/
 ## 릴리즈 (관리자용)
 
 1. `package.json`의 `version`을 올리고 `chore: 버전 x.y.z로 올림`으로 커밋합니다.
-2. GitHub Actions의 **Release** 워크플로를 수동 실행합니다. 타입 검사 후 Chrome·Firefox zip을 빌드하고, 이전 태그 이후 커밋으로 릴리즈 노트를 만들어 GitHub 릴리즈에 올립니다.
-3. zip을 Chrome 웹 스토어와 Firefox Add-ons에 각각 제출합니다.
+2. GitHub Actions의 **Release** 워크플로를 수동 실행합니다. 타입 검사 후 Chrome·Firefox zip을 빌드하고, 이전 태그 이후 커밋으로 릴리즈 노트를 만들어 GitHub 릴리즈에 올린 뒤, Firefox Add-ons와 Chrome 웹 스토어에 제출합니다(종류가 `release`일 때만).
+   - Chrome은 이전 버전이 심사 중이면 제출 단계가 실패합니다. 심사가 끝난 뒤 릴리즈의 zip을 대시보드에 직접 올려 주세요.
+   - `dry_run`을 켜면 스토어 키가 맞는지만 확인하고, GitHub 릴리즈와 제출은 하지 않습니다.
+   - 스토어 키는 저장소 Secrets에 있습니다: `FIREFOX_JWT_ISSUER`, `FIREFOX_JWT_SECRET`(AMO API 키), `CHROME_PUBLISHER_ID`, `CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL`, `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY`(서비스 계정 키 JSON의 `private_key`, `\n`을 실제 줄바꿈으로).
 
 > **권한 추가 주의** — `wxt.config.ts`의 `permissions`/`host_permissions`를 늘리면 Chrome에서 기존 사용자의 확장이 다시 승인할 때까지 꺼집니다. 꼭 필요할 때만 추가하고, 가능하면 선택 권한(optional permissions)을 검토하세요.
