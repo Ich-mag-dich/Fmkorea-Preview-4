@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { cn } from "@/lib/utils";
 import Embed from "./Embed";
 
 /**
@@ -38,7 +39,13 @@ function RichContent({
     <>
       <div
         ref={ref}
-        className={className}
+        // 임베드를 감싼 요소의 인라인 높이 제한(<h1 style="max-height:5.6rem"> 안의
+        // 영상 링크 등)이 임베드를 못 담아 아래 내용과 겹치지 않게 풀어 줌.
+        // 인라인 style을 이겨야 해서 !
+        className={cn(
+          "[&_:has([data-embed])]:h-auto! [&_:has([data-embed])]:max-h-none!",
+          className,
+        )}
         dangerouslySetInnerHTML={{ __html: sanitized }}
       />
       {slots.map(({ node, url }, i) =>
