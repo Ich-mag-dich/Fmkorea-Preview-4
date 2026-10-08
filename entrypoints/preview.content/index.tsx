@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./style.css";
 import { getPreviewLink } from "@/lib/getPreviewLink";
-import { isPreviewHistoryState, previewStore } from "@/lib/preview-store";
+import { previewStore } from "@/lib/preview-store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export default defineContentScript({
@@ -54,13 +54,6 @@ export default defineContentScript({
       },
     );
 
-    // 뒤로 가기 → 미리보기 닫기, 앞으로 가기로 미리보기 기록에 돌아오면 → 다시 열기
-    ctx.addEventListener(window, "popstate", e => {
-      if (isPreviewHistoryState(e.state)) {
-        previewStore.open(location.href, { fromHistory: true });
-      } else {
-        previewStore.close();
-      }
-    });
+    ctx.addEventListener(window, "popstate", previewStore.onPopState);
   },
 });
