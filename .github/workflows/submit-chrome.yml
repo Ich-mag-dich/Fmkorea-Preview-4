@@ -1,0 +1,48 @@
+# 이미 만든 GitHub 릴리즈의 Chrome zip을 Chrome 웹 스토어에 제출.
+# Release 때 Chrome이 이전 버전 심사 중이라 빼 두었으면, 심사가 끝난 뒤 이걸 실행.
+# 다시 빌드하지 않고 릴리즈에 첨부된 zip을 그대로 써서, Firefox에 낸 것과 같은 빌드가 올라감
+name: Submit Chrome
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "제출할 릴리즈 태그 (예: v4.1.2). 비우면 최신 릴리즈"
+        type: string
+        required: false
+
+permissions:
+  contents: read # 릴리즈 zip 내려받기
+
+# Release 워크플로와 동시에 제출하지 않게
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Download release zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        # 태그를 안 주면 gh가 최신 릴리즈를 받음
+        run: gh release download ${TAG:+"$TAG"} --pattern '*-chrome.zip' --dir release
+
+      - name: Submit to Chrome Web Store
+        uses: ./.github/actions/submit-chrome
+        with:
+          zip: release/*-chrome.zip
+          publisher-id: ${{ secrets.CHROME_PUBLISHER_ID }}
+          service-account-client-email: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+          service-account-private-key: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}

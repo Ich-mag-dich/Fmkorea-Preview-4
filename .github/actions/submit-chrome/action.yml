@@ -1,0 +1,46 @@
+# zip을 Chrome 웹 스토어에 제출 (Release, Submit Chrome 워크플로에서 같이 씀).
+# bun install이 끝난 뒤에 부름
+name: Submit to Chrome Web Store
+description: 이전 버전이 심사 중이면 업로드하지 않고 실패
+
+inputs:
+  zip:
+    description: 제출할 zip 경로 (glob 가능)
+    required: true
+  dry-run:
+    description: 키만 확인하고 업로드·제출은 하지 않음
+    default: "false"
+  publisher-id:
+    required: true
+  service-account-client-email:
+    required: true
+  service-account-private-key:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        ZIP: ${{ inputs.zip }}
+        DRY_RUN: ${{ inputs.dry-run }}
+        # v1.1(OAuth)은 2026-10-15에 종료되어 v2(서비스 계정)를 씀
+        CHROME_API_VERSION: v2
+        CHROME_EXTENSION_ID: bboddojafohhhnbdifnlmmmbfngjldhf
+        CHROME_PUBLISHER_ID: ${{ inputs.publisher-id }}
+        CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ inputs.service-account-client-email }}
+        CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ inputs.service-account-private-key }}
+      # 심사 중에 올리면 그 심사가 어떻게 되는지 확인하지 못했고, 패키지는 심사 중인지 보지 않고
+      # 업로드하므로 직접 확인해서 막음. 취소(CHROME_CANCEL_PENDING)하면 대기 순서가 처음부터라 켜지 않음.
+      # $ZIP은 glob을 풀려고 따옴표 없이 씀
+      run: |
+        if [ "$DRY_RUN" != "true" ]; then
+          # status는 dry run을 지원하지 않아서 DRY_RUN=false로 부름
+          status=$(DRY_RUN=false bunx publish-extension status --chrome-zip $ZIP 2>&1)
+          echo "$status"
+          if grep -q "Submitted item status:.*PENDING_REVIEW" <<< "$status"; then
+            echo "::error::Chrome 웹 스토어에서 이전 버전이 심사 중입니다. 심사가 끝난 뒤 Submit Chrome 워크플로로 제출해 주세요."
+            exit 1
+          fi
+        fi
+        bunx wxt submit --chrome-zip $ZIP
