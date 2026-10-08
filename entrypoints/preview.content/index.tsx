@@ -39,6 +39,17 @@ export default defineContentScript({
     });
     ui.mount();
 
+    // 사이트 단축키(숫자키 즐겨찾기 게시판, S/F 이전·다음 글 등)는 document에서 받는데,
+    // Shadow DOM 밖에선 target이 호스트로 바뀌어 미리보기 입력창에 치는 글자도 단축키로
+    // 처리됨. 미리보기가 열려 있는 동안 뒤 페이지가 이동하면 안 되므로 미리보기 안에서
+    // 생긴 키는 호스트에서 전파를 끊음 (스크롤 같은 브라우저 기본 동작은 그대로).
+    // Escape는 Dialog가 document에서 받아 창을 닫으므로 그대로 보냄
+    for (const type of ["keydown", "keypress", "keyup"] as const) {
+      ctx.addEventListener(ui.shadowHost, type, e => {
+        if ((e as KeyboardEvent).key !== "Escape") e.stopPropagation();
+      });
+    }
+
     ctx.addEventListener(
       document,
       "contextmenu",
