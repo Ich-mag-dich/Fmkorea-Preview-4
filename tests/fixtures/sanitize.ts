@@ -65,9 +65,17 @@ for (const { name, path } of files) {
       FAKE_MEMBER_SRL,
     );
   }
-  // 닉네임은 글자 그대로 전부 바꿈. 다른 사람 글에 같은 글자가 있어도 테스트 데이터라 문제없음
+  // 닉네임은 앞뒤에 글자·숫자·_가 붙지 않은 자리만 바꿈. 더 긴 남의 닉네임 속까지 바꾸면
+  // (예: 내 닉네임이 "AB"일 때 "CAB") 남의 정보가 망가지고, 이미 커밋한 파일에 다시 돌렸을 때
+  // diff에서 바뀐 글자로 내 닉네임이 드러남
   for (const nick of nicknames) {
-    text = text.replace(new RegExp(escapeRegExp(nick), "g"), FAKE_NICKNAME);
+    text = text.replace(
+      new RegExp(
+        `(?<![\\p{L}\\p{N}_])${escapeRegExp(nick)}(?![\\p{L}\\p{N}_])`,
+        "gu",
+      ),
+      FAKE_NICKNAME,
+    );
   }
   // 알림 웹소켓 접속 토큰 ws.send('Z@<토큰>@<회원번호>')
   text = text.replace(/(ws\.send\('Z@)[0-9a-f]+(@)/g, `$1${"0".repeat(32)}$2`);
