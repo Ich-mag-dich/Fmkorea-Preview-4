@@ -26,6 +26,10 @@ export const urls = {
   /** 이미지콘 이미지. 사이트 이미지콘 창의 <img src>와 같은 형식 */
   imageCon: (setSrl: number, sortOrder: number) =>
     `https://image.fmkorea.com/filesn/imagecon/${setSrl}/${setSrl}_${sortOrder}.webp`,
+
+  /** 이미지콘 세트 정보(구매) 페이지. 사이트 댓글 이미지콘의 ✚ 아이콘이 가는 주소 */
+  imageConInfo: (setSrl: string) =>
+    `${BASE_URL}/imagecon?set_srl=${encodeURIComponent(setSrl)}`,
 };
 
 /**

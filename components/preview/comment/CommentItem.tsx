@@ -1,6 +1,13 @@
 import type { ReactNode } from "react";
-import { ReplyIcon, ThumbsDownIcon, ThumbsUpIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  ExternalLinkIcon,
+  ReplyIcon,
+  SmileIcon,
+  ThumbsDownIcon,
+  ThumbsUpIcon,
+} from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { urls } from "@/lib/api/urls";
 import { cn } from "@/lib/utils";
 import type { CommentData, VoteType } from "@/lib/types";
 import AuthorMenu from "../author/AuthorMenu";
@@ -137,6 +144,22 @@ function CommentItem({
           className={contentClassName}
           compact
         />
+        {/* 사이트는 이미지콘을 누르면 나오는 ✚ 아이콘으로 세트 정보에 가는데,
+            파서에서 그 아이콘을 지우므로 대신 버튼으로 둠 */}
+        {comment.setSrl && (
+          <a
+            href={urls.imageConInfo(comment.setSrl)}
+            target="_blank"
+            rel="noopener"
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "xs" }),
+              "self-start text-muted-foreground hover:text-foreground",
+            )}>
+            <SmileIcon />
+            이미지콘 정보
+            <ExternalLinkIcon />
+          </a>
+        )}
 
         {isReplying && replyForm}
       </div>

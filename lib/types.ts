@@ -16,6 +16,9 @@ export interface CommentData {
 
   // best 댓글과 일반 댓글을 구분하는 구분선 여부
   divider: boolean;
+
+  /** 이미지콘일 경우 자식 요소에 <img class="imagecon" data-set-srl="..." /> 형태로 이미지콘 세트의 srl이 있음 */
+  setSrl?: string;
 }
 
 export interface PostData {

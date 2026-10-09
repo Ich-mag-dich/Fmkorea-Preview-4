@@ -151,6 +151,12 @@ describe("parseComment", () => {
       commentCount: 0,
     });
   });
+
+  test("이미지콘 확인", () => {
+    const { comments } = parseComment(loadPage("image-con.html"));
+    // 게시글 저장 시점, 댓글 4개 모두 이미지콘
+    expect(comments.every(c => c.setSrl !== undefined)).toBe(true);
+  });
 });
 
 describe("parsePagination", () => {

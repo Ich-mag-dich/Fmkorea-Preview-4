@@ -125,6 +125,7 @@ export const parseComment = (
       const contentWrap = li.querySelector(".comment-content");
       const contentEl =
         contentWrap?.querySelector(".xe_content") ?? contentWrap;
+      let setSrl: string | undefined;
       if (contentEl) {
         absolutizeMedia(contentEl);
         contentEl
@@ -132,6 +133,10 @@ export const parseComment = (
           .forEach(a => a.removeAttribute("onclick"));
         contentEl.querySelector("span.imagecon-buy-icon")?.remove();
         prepareEmbeds(contentEl);
+        const imageConEl = contentEl.querySelector("img.imagecon");
+        if (imageConEl) {
+          setSrl = imageConEl.getAttribute("data-set-srl") ?? undefined;
+        }
       }
 
       const memberPlate = li.querySelector(".member_plate");
@@ -167,6 +172,7 @@ export const parseComment = (
           // 대댓글은 style="margin-left:2%", 한 단계 깊어질 때마다 2%씩 증가
           depth: Math.round((parseFloat(li.style.marginLeft) || 0) / 2),
           divider: li.classList.contains("comment_border"),
+          setSrl,
         },
       ];
     }),
