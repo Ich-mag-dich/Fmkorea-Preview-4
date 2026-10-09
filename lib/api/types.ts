@@ -80,3 +80,44 @@ export interface RelatedProductsResult {
   error: number;
   message: string;
 }
+
+/** 이미지콘 */
+export interface ImageCon {
+  sort_order: number;
+  alt_text: string;
+}
+
+export interface ImageConsSet {
+  set_srl: number;
+  title: string;
+  tags: string[];
+  images: ImageCon[];
+}
+
+export interface RecentImageCon {
+  set_srl: number;
+  title: string;
+  alt_text: string;
+  sort_order: number;
+}
+
+/** ?act=getMemberImagecons 응답 */
+export interface ImageConsResponse {
+  sets: ImageConsSet[];
+  recent: RecentImageCon[];
+  favorites: RecentImageCon[];
+  /** 즐겨찾기에 담을 수 있는 최대 개수 */
+  favorites_max: number;
+  error: number;
+  message: string;
+}
+
+/** ?act=procImageconAddFavorite / procImageconRemoveFavorite 응답. 바뀐 뒤의 즐겨찾기 전체가 옴 */
+export interface ImageConFavoriteResult {
+  favorites: RecentImageCon[];
+  count: number;
+  max: number;
+  error: number;
+  /** "즐겨찾기에 등록되었습니다." / "즐겨찾기에서 해제되었습니다." */
+  message: string;
+}

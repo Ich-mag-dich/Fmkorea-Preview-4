@@ -29,4 +29,7 @@ export const queryKeys = {
     ["prediction-poll-list", pk, option, page] as const,
 
   relatedProducts: (docId: string) => ["related-products", docId] as const,
+
+  /** 이미지콘 */
+  imageCons: () => ["image-cons"] as const,
 };

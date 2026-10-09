@@ -22,6 +22,10 @@ export const urls = {
 
   writtenArticles: ({ mid, memberSrl }: { mid: string; memberSrl: string }) =>
     indexUrl({ mid, search_target: "member_srl", search_keyword: memberSrl }),
+
+  /** 이미지콘 이미지. 사이트 이미지콘 창의 <img src>와 같은 형식 */
+  imageCon: (setSrl: number, sortOrder: number) =>
+    `https://image.fmkorea.com/filesn/imagecon/${setSrl}/${setSrl}_${sortOrder}.webp`,
 };
 
 /**
