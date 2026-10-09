@@ -42,6 +42,9 @@ export interface PostData {
   predictionPolls: PredictionPoll[];
   /** 핫딜 글에만 있는 정보. 핫딜 글이 아니면 null */
   hotdeal: HotdealInfo | null;
+
+  /** 포텐 글 여부 */
+  isBest: boolean;
 }
 
 /** 핫딜 글 본문 밖(.rd_body 아래)에 있는 정보 */

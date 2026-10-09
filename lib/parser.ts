@@ -185,6 +185,7 @@ export const parsePost = (url: string, doc: Document): PostData => {
   const authorPlate = doc.querySelector(".member_plate");
   const pagination = parsePagination(doc);
   let voteRid = "";
+
   // URL에 글 번호가 없는 형식이면 본문 위 글 주소 링크에서 찾음
   const addressHref = doc
     .querySelector<HTMLAnchorElement>("div.document_address > a")
@@ -207,6 +208,8 @@ export const parsePost = (url: string, doc: Document): PostData => {
       }
     }
   }
+  const mid =
+    doc.querySelector<HTMLInputElement>("input[name='mid']")?.value ?? "";
 
   // 본문 정리(extractContentHtml)보다 먼저 읽어야 함
   const predictionPolls = parsePredictionPolls(doc);
@@ -235,7 +238,7 @@ export const parsePost = (url: string, doc: Document): PostData => {
       ?? "",
     docId,
     url,
-    mid: doc.querySelector<HTMLInputElement>("input[name='mid']")?.value ?? "",
+    mid,
 
     voteCount:
       parseInt(
@@ -252,6 +255,13 @@ export const parsePost = (url: string, doc: Document): PostData => {
     historyParams: parseHistoryParams(doc),
     predictionPolls,
     hotdeal: parseHotdeal(doc),
+    // 같은 글이라도 원래 게시판 주소(/번호)로 열면 제목에 "포텐" 표시(.STAR-BEST_T)가 붙고,
+    // 포텐 게시판 주소(/best/번호, mid=best)로 열면 그 표시가 없어서 주소와 mid로도 판단함.
+    // best2(포텐 게시판 화제순)도 포텐 글이라 "best"가 들어가는지로 봄
+    isBest:
+      url.includes("/best")
+      || doc.querySelector(".STAR-BEST_T") !== null
+      || mid.includes("best"),
   };
 
   return postData;

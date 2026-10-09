@@ -82,6 +82,34 @@ describe("parsePost: 핫딜 글", () => {
   });
 });
 
+describe("parsePost: 포텐 터진 게시글", () => {
+  const post1 = parsePost(
+    "https://www.fmkorea.com/best/10427494594",
+    loadPage("is-best-url.html"),
+  );
+
+  test("포텐 게시판(/best) 글 확인", () => {
+    expect(post1.isBest).toBe(true);
+  });
+
+  const post2 = parsePost(
+    "https://www.fmkorea.com/10427494594",
+    loadPage("is-best-class.html"),
+  );
+
+  test("STAR-BEST_T 클래스 유무로 포텐 터진 게시글 확인", () => {
+    expect(post2.isBest).toBe(true);
+  });
+
+  test("일반 게시글은 isBest가 false", () => {
+    const post = parsePost(
+      "https://www.fmkorea.com/10419657717",
+      loadPage("post-normal.html"),
+    );
+    expect(post.isBest).toBe(false);
+  });
+});
+
 describe("parseComment", () => {
   test("베스트 댓글은 위쪽 사본(id 끝 _)으로 구분", () => {
     const { comments, commentCount } = parseComment(

@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { SmileIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { usePreviewPost } from "@/hooks/use-preview-post";
 import { imageConContent } from "@/lib/api/image-cons";
 import { cn } from "@/lib/utils";
 import ImageConPanel from "./ImageConPanel";
@@ -49,6 +50,7 @@ function CommentForm({
     }
     setImageConOpen(open => !open);
   };
+  const isBest = usePreviewPost().post.isBest;
 
   return (
     <form
@@ -122,17 +124,20 @@ function CommentForm({
         <span className="mr-auto text-xs text-muted-foreground">
           {imageConOpen ? "이미지콘을 누르면 바로 등록" : "Ctrl + Enter로 등록"}
         </span>
-        <Button
-          type="button"
-          variant={imageConOpen ? "secondary" : "ghost"}
-          size="xs"
-          aria-pressed={imageConOpen}
-          onClick={toggleImageCon}
-          // 글자가 있으면 막힌 것처럼 흐리게. 누르면 이유를 알려 줌 (사이트와 같음)
-          className={cn("text-muted-foreground", hasText && "opacity-50")}>
-          <SmileIcon />
-          이미지콘
-        </Button>
+        {/* 이미지콘 버튼. 포텐터진 게시글이면 표시하지 않음 */}
+        {!isBest && (
+          <Button
+            type="button"
+            variant={imageConOpen ? "secondary" : "ghost"}
+            size="xs"
+            aria-pressed={imageConOpen}
+            onClick={toggleImageCon}
+            // 글자가 있으면 막힌 것처럼 흐리게. 누르면 이유를 알려 줌 (사이트와 같음)
+            className={cn("text-muted-foreground", hasText && "opacity-50")}>
+            <SmileIcon />
+            이미지콘
+          </Button>
+        )}
       </div>
     </form>
   );
