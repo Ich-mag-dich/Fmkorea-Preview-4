@@ -32,7 +32,8 @@ const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const memberSrls = new Set<string>();
 for (const text of contents.values()) {
   const srl = text.match(/current_member_srl = (\d+)/)?.[1];
-  if (srl && srl !== FAKE_MEMBER_SRL) memberSrls.add(srl);
+  // 로그아웃하고 저장한 페이지는 0이라 빼야 함. 넣으면 모든 파일의 숫자 0이 가짜 번호로 바뀜
+  if (srl && srl !== "0" && srl !== FAKE_MEMBER_SRL) memberSrls.add(srl);
 }
 
 // 2. 그 회원의 닉네임. 작성자 표시(<a class='member_번호 member_plate'>아이콘…닉네임</a>)와
