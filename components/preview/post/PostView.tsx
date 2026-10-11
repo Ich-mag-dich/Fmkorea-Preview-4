@@ -85,6 +85,8 @@ function PostView() {
         <Button
           variant="outline"
           className="text-blue-600 dark:text-blue-400"
+          // 연달아 누르면 두 번째 요청이 "이미 추천" 에러가 되므로 응답이 올 때까지 막음
+          disabled={vote.isPending}
           onClick={() => onVote("up")}>
           <ThumbsUpIcon />
           추천
@@ -95,6 +97,7 @@ function PostView() {
         <Button
           variant="outline"
           className="text-red-700 dark:text-red-400"
+          disabled={vote.isPending}
           onClick={() => onVote("down")}>
           <ThumbsDownIcon />
           비추천

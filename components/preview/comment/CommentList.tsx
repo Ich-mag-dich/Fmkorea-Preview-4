@@ -11,12 +11,14 @@ function CommentList({
   comments,
   commentCount,
   onVote,
+  votePending = false,
   onReply,
   replyPending = false,
 }: {
   comments: CommentData[];
   commentCount: number;
   onVote?: (type: VoteType, id: string) => void;
+  votePending?: boolean;
   /** 답글 등록. 성공하면 true (입력창이 닫힘) */
   onReply?: (parentSrl: string, content: string) => Promise<boolean>;
   replyPending?: boolean;
@@ -60,6 +62,7 @@ function CommentList({
                 key={key}
                 comment={comment}
                 onVote={onVote}
+                votePending={votePending}
                 isReplying={replyingKey === key}
                 onReply={
                   onReply

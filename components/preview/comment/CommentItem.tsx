@@ -31,12 +31,15 @@ const MAX_DEPTH = 6;
 function CommentItem({
   comment,
   onVote,
+  votePending = false,
   isReplying = false,
   onReply,
   replyForm,
 }: {
   comment: CommentData;
   onVote?: (type: VoteType, id: string) => void;
+  /** 추천 요청 중. 다시 누르면 취소되는 방식이라 연달아 누르지 못하게 막음 */
+  votePending?: boolean;
   /** 이 댓글의 답글 입력창이 열려 있는지 */
   isReplying?: boolean;
   /** 답글 버튼 클릭 (입력창 열기/닫기) */
@@ -122,7 +125,7 @@ function CommentItem({
               variant="ghost"
               size="xs"
               className="text-muted-foreground hover:text-blue-600"
-              disabled={!onVote}
+              disabled={!onVote || votePending}
               onClick={() => onVote?.("up", comment.id)}>
               <ThumbsUpIcon />
               {comment.voteUp}
@@ -131,7 +134,7 @@ function CommentItem({
               variant="ghost"
               size="xs"
               className="text-muted-foreground hover:text-red-600"
-              disabled={!onVote}
+              disabled={!onVote || votePending}
               onClick={() => onVote?.("down", comment.id)}>
               <ThumbsDownIcon />
               {comment.voteDown}

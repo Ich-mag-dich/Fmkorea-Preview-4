@@ -45,6 +45,7 @@ function CommentSection({
           const comment = current.comments.find(c => c.id === id);
           if (comment) vote.mutate({ comment, type });
         }}
+        votePending={vote.isPending}
         onReply={(parentSrl, content) => submit(content, parentSrl)}
         replyPending={insert.isPending}
       />
