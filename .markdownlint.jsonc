@@ -1,0 +1,10 @@
+// VS Code markdownlint 확장 설정. 문서는 GitHub에서 보므로 GitHub이 렌더링하는 HTML 태그 중 쓰는 것만 허용
+{
+  // 줄 길이 제한 끔. 이 파일이 있으면 확장의 기본 설정(MD013 꺼짐) 대신 이 파일을 쓰므로 다시 꺼 둠.
+  // 표 한 줄과 한국어 문장은 80자를 쉽게 넘음
+  "MD013": false,
+  "MD033": {
+    // br: 표 칸 안 줄바꿈, details/summary: README의 접는 영역
+    "allowed_elements": ["br", "details", "summary"],
+  },
+}
