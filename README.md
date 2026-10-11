@@ -45,6 +45,8 @@ Chrome과 Firefox를 지원합니다.
 - 베스트 댓글 강조 표시
 - 답글 스레드를 세로 가이드 라인으로 표시
 - 댓글 · 답글 작성 (`Ctrl + Enter`로 등록)
+- 이미지콘 댓글 (즐겨찾기 · 최근 사용 · 보유 세트, 우클릭으로 즐겨찾기 등록·해제)
+- 댓글 이미지콘의 정보 페이지 열기
 - 댓글 추천 / 비추천
 
 ### 3. 작성자 메뉴
@@ -61,6 +63,7 @@ Chrome과 Firefox를 지원합니다.
 - **영상:** YouTube(쇼츠, 시작 시간 지원), 치지직 클립, SOOP VOD
   - 썸네일을 먼저 보여 주고, 누르면 재생합니다.
 - **게시물:** X(Twitter), Instagram
+- **이미지:** 이미지 주소 링크는 이미지로 보여 줍니다.
 - 링크가 걸리지 않은 URL은 자동으로 링크로 바꿉니다.
 
 ### 5. 설정
@@ -90,6 +93,7 @@ bun install
 bun run dev          # Chrome 개발 모드
 bun run dev:firefox  # Firefox 개발 모드
 bun run compile      # 타입 검사
+bun run lint         # 프로젝트 규칙 검사
 bun run test         # 파서 테스트
 ```
 
@@ -112,7 +116,7 @@ bun run zip:firefox    # 스토어 업로드용 zip (Firefox)
 ```text
 entrypoints/
   preview.content/  미리보기 (Shadow DOM 안에 렌더링되는 content script)
-  content.ts        사이트 글꼴 적용
+  content.ts        사이트 글꼴 적용, 인기글·대문 숨기기
   popup/            확장 아이콘 팝업
   options/          설정 페이지
 components/

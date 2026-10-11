@@ -53,10 +53,11 @@ hooks/
 lib/
   api/
     request.ts       공통 요청 함수 (postAct, postXml, readJson ...)
-    post.ts comment.ts member.ts poll.ts hotdeal.ts   기능별 요청
+    post.ts comment.ts member.ts poll.ts hotdeal.ts image-cons.ts   기능별 요청
     urls.ts          사이트 주소, 글 번호 추출
     types.ts         사이트 응답(JSON) 형식
   parser.ts          페이지·응답 HTML/XML → 데이터
+  media.ts           본문 정리 (이미지·영상 주소, 영상 태그, 임베드 자리표시자)
   prediction-poll.ts 승부예측 폼 파싱과 참여 결과 반영
   embed.ts           링크 → 영상/SNS 임베드 판별
   sanitize.ts        렌더링 전 HTML 정화 (DOMPurify)
@@ -98,9 +99,13 @@ tests/
 4. **파싱** — 응답이나 페이지가 HTML이면 파싱 함수를 [lib/parser.ts](lib/parser.ts)(또는 기능 전용 파일)에 둡니다. 게시글 페이지에서 읽을 값이면 `parsePost`의 `PostData`에 필드를 추가합니다.
 5. **캐시 키** — 조회라면 [hooks/query-keys.ts](hooks/query-keys.ts)에 키를 추가합니다.
 6. **훅** — `hooks/use-<기능>.ts`에 `useQuery`/`useMutation` 훅을 만듭니다. 게시글 데이터를 고쳐야 하면 [hooks/query-cache.ts](hooks/query-cache.ts)의 `updatePostData`, `updateComments`를 씁니다.
+   - 전역 기본 `staleTime`이 60초라서([index.tsx](entrypoints/preview.content/index.tsx)), mutation 안에서 `queryClient.query`로 서버 상태를 다시 확인할 때는 `staleTime: 0`을 줘야 캐시가 아니라 서버 값을 받습니다([use-blind-member.ts](hooks/use-blind-member.ts)).
 7. **컴포넌트** — `components/preview/<기능>/`에 컴포넌트를 만들고 [PostView](components/preview/post/PostView.tsx) 등에 배치합니다. 지금 보는 글(`href`, `post`)이 필요하면 props로 받지 말고 [`usePreviewPost()`](hooks/use-preview-post.ts)로 꺼내고, 버튼 동작은 그 컴포넌트에서 훅을 직접 부릅니다.
 
 ## 에펨코리아 사이트 특이점
+
+> [!IMPORTANT]
+> 사이트 요청이나 파서를 고치기 전에 먼저 읽어 주세요. 요청 쪽은 자동 테스트가 없어서 여기 있는 실수는 테스트로 잡히지 않습니다.
 
 코드에 주석으로도 남겨 두었지만, 처음 보면 헷갈리는 것들입니다.
 
@@ -127,7 +132,7 @@ tests/
   - 긴 조건은 연산자(`&&`, `+`)를 줄 앞에 두고, 여러 단계 삼항식은 `? :`를 줄 앞에 맞춥니다 (`.prettierrc`의 `experimentalOperatorPosition`, `experimentalTernaries`).
 - 주석은 한국어로, "무엇"보다 "왜"를 적습니다. 특히 사이트 동작 때문에 이상해 보이는 코드에는 이유를 꼭 남깁니다.
 - 파일 이름: 컴포넌트는 `PascalCase.tsx`, 훅은 `use-kebab-case.ts`, 그 외는 `kebab-case.ts`.
-- import는 다른 폴더면 `@/` 경로, 같은 기능 폴더 안이면 `./` 상대 경로를 씁니다.
+- import는 다른 기능 폴더면 `@/` 경로, 같은 기능 폴더 안이면 상대 경로를 씁니다. `entrypoints/options/`처럼 한 화면(entrypoint)에 딸린 `components/`, `hooks/`는 그 화면 전체를 한 기능 폴더로 봅니다.
 
 ## 확인 방법
 
@@ -146,7 +151,8 @@ tests/
 화면과 실제 요청은 테스트로 확인할 수 없어서, 변경한 부분에 맞춰 브라우저에서 확인해 주세요.
 
 - 일반 글, 이미지·영상이 많은 글, 핫딜 글(정보 표, 유사 핫딜, 종료 신고), 승부예측 글(마감 전·후)
-- 댓글 페이지 이동, 답글, 베스트 댓글
+- 댓글 페이지 이동, 답글, 베스트 댓글, 이미지콘 댓글
+- 작성자 메뉴의 블라인드 추가·해제, 게시판 이력
 - 로그인한 상태와 안 한 상태
 - 사이트 야간 모드 켜고 끄기
 - Chrome과 Firefox 둘 다
@@ -174,7 +180,7 @@ tests/
 ## 릴리즈 (관리자용)
 
 1. `package.json`의 `version`을 올리고 `chore: 버전 x.y.z로 올림`으로 커밋합니다.
-2. GitHub Actions의 **Release** 워크플로를 수동 실행합니다. 타입 검사 후 Chrome·Firefox zip을 빌드하고, 이전 태그 이후 커밋으로 릴리즈 노트를 만들어 GitHub 릴리즈에 올린 뒤, Firefox Add-ons와 Chrome 웹 스토어에 제출합니다(종류가 `release`일 때만).
+2. GitHub Actions의 **Release** 워크플로를 수동 실행합니다. 타입 검사, lint, 테스트를 통과하면 Chrome·Firefox zip을 빌드하고, 이전 태그 이후 커밋으로 릴리즈 노트를 만들어 GitHub 릴리즈에 올린 뒤, Firefox Add-ons와 Chrome 웹 스토어에 제출합니다(종류가 `release`일 때만).
    - Chrome에 이전 버전이 심사 중이면 `stores`를 `firefox`로 골라 Chrome을 빼 주세요(빼지 않으면 업로드 전에 확인해서 Chrome 단계만 실패합니다). 심사가 끝난 뒤 **Submit Chrome** 워크플로를 실행하면 그 릴리즈에 첨부된 zip을 다시 빌드하지 않고 그대로 제출합니다.
    - `dry_run`을 켜면 스토어 키가 맞는지만 확인하고, GitHub 릴리즈와 제출은 하지 않습니다.
    - 스토어 키는 저장소 Secrets에 있습니다: `FIREFOX_JWT_ISSUER`, `FIREFOX_JWT_SECRET`(AMO API 키), `CHROME_PUBLISHER_ID`, `CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL`, `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY`(서비스 계정 키 JSON의 `private_key`, `\n`을 실제 줄바꿈으로).
