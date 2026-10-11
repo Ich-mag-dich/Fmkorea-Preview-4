@@ -24,7 +24,8 @@ export default function FontOption({
       disabled={!installed}
       onClick={onSelect}
       className={cn(
-        "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-colors",
+        // min-w-0: 격자 칸보다 넓어지지 않게 (두 열 설정 화면에선 칸이 좁아서 견본이 넘침)
+        "flex min-w-0 flex-col items-start gap-1 rounded-lg border p-3 text-left transition-colors",
         "hover:bg-muted/60 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent",
         selected
           && "border-blue-500 bg-blue-50 ring-1 ring-blue-500 hover:bg-blue-50 dark:bg-blue-500/15 dark:hover:bg-blue-500/15",
@@ -40,7 +41,7 @@ export default function FontOption({
       </span>
       {/* 이름 없음 = 사이트 기본. 옵션 페이지 기본 글꼴로 견본 표시 */}
       <span
-        className="truncate text-base"
+        className="max-w-full truncate text-base"
         style={{ fontFamily: toFontFamily(name) ?? undefined }}>
         {FONT_SAMPLE}
       </span>

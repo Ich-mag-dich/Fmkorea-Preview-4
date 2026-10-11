@@ -4,7 +4,8 @@ export default function WidthPreview({ width }: { width: number }) {
   const ratio = Math.min(width / screenWidth, 1);
   return (
     <div className="flex flex-col gap-2">
-      <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-lg border bg-muted/50 p-[4%]">
+      {/* 폭만 보여 주면 되므로 화면 비율(16:9)보다 납작하게 해서 설정 카드가 너무 길어지지 않게 */}
+      <div className="relative flex aspect-2/1 w-full items-center justify-center overflow-hidden rounded-lg border bg-muted/50 p-[4%]">
         <div
           className="flex h-full flex-col gap-1.5 rounded-md bg-background p-3 shadow-lg ring-1 ring-foreground/10 transition-[width] duration-150"
           style={{ width: `${ratio * 100}%` }}>
