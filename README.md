@@ -136,3 +136,11 @@ lib/
   settings.ts       설정 항목 정의
 tests/              파서 테스트 (fixtures/ 에 저장한 사이트 페이지)
 ```
+
+## 참고한 프로젝트
+
+처음 만들 때부터 WXT로 옮기기까지 [DCRefresher Reborn](https://github.com/green1052/DCRefresher-Reborn)(디시인사이드 개선 확장 프로그램)을 참고했습니다. 감사합니다.
+
+## 라이선스
+
+[MIT](./LICENSE)

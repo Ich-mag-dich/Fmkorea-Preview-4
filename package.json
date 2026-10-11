@@ -3,6 +3,7 @@
   "description": "에펨코리아 게시글 미리보기 확장 기능",
   "private": true,
   "version": "4.2.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "wxt",
