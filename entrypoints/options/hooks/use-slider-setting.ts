@@ -10,19 +10,21 @@ export function useSliderSetting(
 ) {
   const [saved, save] = useStorageItem(item);
   const [draft, setDraft] = useState(saved);
-  const [justSaved, setJustSaved] = useState(false);
+  // true/false로 두면 "저장됨"이 떠 있는 동안 다시 저장해도 값이 그대로라 타이머가
+  // 새로 시작되지 않음. 저장한 시각으로 둬서 저장할 때마다 1.5초를 다시 셈
+  const [savedAt, setSavedAt] = useState(0);
   useEffect(() => setDraft(saved), [saved]);
 
   const commit = async (value: number) => {
     setDraft(value);
     await save(value);
-    setJustSaved(true);
+    setSavedAt(Date.now());
   };
   useEffect(() => {
-    if (!justSaved) return;
-    const timer = setTimeout(() => setJustSaved(false), 1500);
+    if (!savedAt) return;
+    const timer = setTimeout(() => setSavedAt(0), 1500);
     return () => clearTimeout(timer);
-  }, [justSaved]);
+  }, [savedAt]);
 
-  return { draft, setDraft, commit, justSaved };
+  return { draft, setDraft, commit, justSaved: savedAt !== 0 };
 }
