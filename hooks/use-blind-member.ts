@@ -62,6 +62,9 @@ export const useBlindMember = ({
       const status = await queryClient.query({
         queryKey: queryKeys.blindStatus(memberSrl),
         queryFn: () => fetchBlindStatus({ memberSrl, docId, mid }),
+        // 기본 staleTime(60초)이면 메뉴를 열 때 받아 둔 변경 전 상태를 그대로 돌려줘서
+        // 성공해도 실패로 판단함. 항상 서버에 다시 물음
+        staleTime: 0,
       });
       if (status[type] !== (mode === "add")) {
         throw new Error(data?.message || "블라인드 처리에 실패했습니다");
