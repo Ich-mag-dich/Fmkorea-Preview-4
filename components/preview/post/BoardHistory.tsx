@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { openInPreview } from "../open-in-preview";
+import { openInPreview } from "@/components/preview/open-in-preview";
 import { useBoardHistory } from "@/hooks/use-board-history";
 import { usePreviewPost } from "@/hooks/use-preview-post";
 import type { HistoryItem } from "@/lib/types";

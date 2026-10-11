@@ -1,6 +1,6 @@
 /** 댓글: 댓글 페이지 받기, 추천/비추천, 작성 */
-import { parseComment, parsePagination } from "../parser";
-import type { CommentData, VoteType } from "../types";
+import { parseComment, parsePagination } from "@/lib/parser";
+import type { CommentData, VoteType } from "@/lib/types";
 import { fetchPage, postAct, postXml, readXml } from "./request";
 import type { VoteResult } from "./types";
 import { urls, withCommentPage } from "./urls";

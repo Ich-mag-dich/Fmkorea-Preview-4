@@ -1,6 +1,6 @@
 /** 회원: 블라인드 상태 조회·변경, 게시판 이력 */
-import { parseBlindStatus, parseBoardHistory } from "../parser";
-import type { BlindType, BoardHistory, PostData } from "../types";
+import { parseBlindStatus, parseBoardHistory } from "@/lib/parser";
+import type { BlindType, BoardHistory, PostData } from "@/lib/types";
 import { pageFetch, postXml, readXml } from "./request";
 import { urls } from "./urls";
 

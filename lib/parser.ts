@@ -1,4 +1,4 @@
-import { getDocumentSrl, urls } from "./api/urls";
+import { getDocumentSrl, urls } from "@/lib/api/urls";
 import { absolutizeMedia, cleanContent } from "./media";
 import { prepareEmbeds } from "./embed";
 import { parsePredictionPolls, removePredictionPolls } from "./prediction-poll";

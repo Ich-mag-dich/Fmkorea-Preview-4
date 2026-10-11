@@ -1,4 +1,4 @@
-import type { PredictionPollBetResult } from "./api/types";
+import type { PredictionPollBetResult } from "@/lib/api/types";
 import type { PredictionPoll, PredictionPollOption } from "./types";
 
 const POLL_SELECTOR = "form.fm-pp";

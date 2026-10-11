@@ -1,5 +1,5 @@
 /** 승부예측: 참여 현황, 참여하기 */
-import type { PostData } from "../types";
+import type { PostData } from "@/lib/types";
 import { postAct, readJson } from "./request";
 import type { PredictionPollBetResult, PredictionPollList } from "./types";
 

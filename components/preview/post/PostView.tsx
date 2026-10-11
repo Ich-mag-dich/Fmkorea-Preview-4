@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 import type { VoteType } from "@/lib/types";
 import { usePreviewPost } from "@/hooks/use-preview-post";
 import { useVotePost } from "@/hooks/use-vote-post";
-import AuthorMenu from "../author/AuthorMenu";
-import RichContent from "../content/RichContent";
-import PredictPoll from "../poll/PredictPoll";
-import RelatedHotdeals from "../hotdeal/RelatedHotdeals";
-import RelatedProducts from "../hotdeal/RelatedProducts";
+import AuthorMenu from "@/components/preview/author/AuthorMenu";
+import RichContent from "@/components/preview/content/RichContent";
+import PredictPoll from "@/components/preview/poll/PredictPoll";
+import RelatedHotdeals from "@/components/preview/hotdeal/RelatedHotdeals";
+import RelatedProducts from "@/components/preview/hotdeal/RelatedProducts";
 import BoardHistory from "./BoardHistory";
 
 // 본문은 fmkorea가 준 HTML이라 Tailwind 클래스를 직접 못 붙이므로 하위 태그 선택자로 스타일링

@@ -1,4 +1,4 @@
-import { urls } from "./api/urls";
+import { urls } from "@/lib/api/urls";
 import { prepareEmbeds } from "./embed";
 
 // 볼륨은 여기서 넣어도 HTML 문자열로 바뀌면서 사라지므로

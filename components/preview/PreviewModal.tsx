@@ -12,8 +12,8 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import CommentSection from "./comment/CommentSection";
-import PostView from "./post/PostView";
+import CommentSection from "@/components/preview/comment/CommentSection";
+import PostView from "@/components/preview/post/PostView";
 import PreviewError from "./PreviewError";
 import PreviewRemote from "./PreviewRemote";
 import PreviewSkeleton from "./PreviewSkeleton";

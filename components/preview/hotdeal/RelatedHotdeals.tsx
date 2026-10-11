@@ -1,5 +1,5 @@
 import { FlameIcon } from "lucide-react";
-import { openInPreview } from "../open-in-preview";
+import { openInPreview } from "@/components/preview/open-in-preview";
 import type { RelatedHotdeal } from "@/lib/types";
 import RelatedSection from "./RelatedSection";
 

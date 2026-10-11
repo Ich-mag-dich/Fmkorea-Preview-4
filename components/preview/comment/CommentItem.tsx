@@ -10,8 +10,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { urls } from "@/lib/api/urls";
 import { cn } from "@/lib/utils";
 import type { CommentData, VoteType } from "@/lib/types";
-import AuthorMenu from "../author/AuthorMenu";
-import RichContent from "../content/RichContent";
+import AuthorMenu from "@/components/preview/author/AuthorMenu";
+import RichContent from "@/components/preview/content/RichContent";
 
 // 댓글 본문도 fmkorea HTML이라 하위 태그 선택자로 스타일링
 const contentClassName = cn(

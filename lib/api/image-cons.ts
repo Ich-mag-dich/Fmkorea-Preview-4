@@ -1,5 +1,5 @@
 /** 이미지콘: 내가 가진 이미지콘 목록 */
-import type { PostData } from "../types";
+import type { PostData } from "@/lib/types";
 import { postAct, readJson } from "./request";
 import type { ImageConFavoriteResult, ImageConsResponse } from "./types";
 

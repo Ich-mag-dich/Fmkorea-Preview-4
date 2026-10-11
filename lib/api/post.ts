@@ -1,6 +1,6 @@
 /** 게시글: 글 페이지 받기, 추천/비추천 */
-import { parseComment, parsePost } from "../parser";
-import type { CommentData, PostData, VoteType } from "../types";
+import { parseComment, parsePost } from "@/lib/parser";
+import type { CommentData, PostData, VoteType } from "@/lib/types";
 import { fetchPage, postAct, readJson } from "./request";
 import type { VoteResult } from "./types";
 import { toCanonicalPostUrl } from "./urls";
