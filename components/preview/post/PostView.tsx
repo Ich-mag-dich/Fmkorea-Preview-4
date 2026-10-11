@@ -20,7 +20,9 @@ const contentClassName = cn(
   "[&_p]:my-2",
   // href 없는 <a>(핫딜 종료 신고자 이름 등)는 링크가 아니므로 링크 모양을 주지 않음
   "[&_a[href]]:text-blue-600 [&_a[href]]:underline dark:[&_a[href]]:text-blue-400",
-  "[&_img]:mx-auto [&_img]:my-3 [&_img]:h-auto [&_img]:max-w-[min(600px,100%)] [&_img]:rounded-md",
+  // 이미지는 사이트처럼 줄 안에 두고 정렬도 문단(align 등)을 따름. Tailwind 기본 스타일이 img를 block으로 바꿔서
+  // 그대로 두면 작성자가 나란히 놓은 이미지도 한 장씩 위아래로 쌓임
+  "[&_img]:my-3 [&_img]:inline-block [&_img]:h-auto [&_img]:max-w-[min(600px,100%)] [&_img]:rounded-md",
   "[&_video]:mx-auto [&_video]:my-3 [&_video]:max-h-[480px] [&_video]:max-w-full",
   "[&_iframe]:max-w-full",
 );
