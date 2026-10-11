@@ -31,7 +31,9 @@ function PreviewModal({
   onClosed: () => void;
 }) {
   const portalContainer = usePortalContainer();
-  const { data, isPending, isError, isFetching, refetch } = usePost(href);
+  // 화면은 isError보다 data를 먼저 보고 고름. 댓글 작성 등 뒤의 다시 받기가 실패하면 isError여도
+  // 이전 data가 남아 있어서, 보던 글과 쓰던 입력을 에러 화면으로 덮지 않음
+  const { data, isPending, isFetching, refetch } = usePost(href);
   const popupRef = useRef<HTMLDivElement>(null);
   const commentsRef = useRef<HTMLDivElement>(null);
   const [previewWidth] = useStorageItem(previewWidthItem);
@@ -113,7 +115,7 @@ function PreviewModal({
         )}>
         {isPending ?
           <PreviewSkeleton />
-        : isError ?
+        : !data ?
           <PreviewError href={href} onRetry={refetch} retrying={isFetching} />
           // 본문·댓글 안의 컴포넌트는 이 값으로 지금 보는 글을 꺼내 씀 (props로 안 넘김)
         : <PreviewPostContext value={{ href, post: data.PostData }}>
