@@ -5,10 +5,7 @@ import { cn } from "@/lib/utils";
 import { urls } from "@/lib/api/urls";
 import { usePortalContainer } from "@/hooks/use-portal-container";
 import { usePreviewPost } from "@/hooks/use-preview-post";
-import { useQuery } from "@tanstack/react-query";
-import { fetchBlindStatus } from "@/lib/api/member";
-import { useBlindMember } from "@/hooks/use-blind-member";
-import { queryKeys } from "@/hooks/query-keys";
+import { useBlindMember, useBlindStatus } from "@/hooks/use-blind-member";
 import type { BlindType } from "@/lib/types";
 import BlindDialog from "./BlindDialog";
 
@@ -31,12 +28,7 @@ function AuthorMenu({
   const container = usePortalContainer();
   const [open, setOpen] = useState(false);
 
-  const blindStatus = useQuery({
-    queryKey: queryKeys.blindStatus(memberSrl),
-    queryFn: () => fetchBlindStatus({ memberSrl, docId, mid }),
-    enabled: open && !!memberSrl, // 메뉴를 열 때만 요청
-    staleTime: 30_000, // 바로 다시 열면 재요청 안 함
-  });
+  const blindStatus = useBlindStatus({ memberSrl, docId, mid }, open); // 메뉴를 열 때만 요청
   const blind = useBlindMember({ memberSrl, docId, mid });
   // 닫히는 애니메이션 동안에도 대상 문구가 유지되도록 type은 open과 따로 보관
   const [blindDialog, setBlindDialog] = useState<{

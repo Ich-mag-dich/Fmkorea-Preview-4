@@ -1,13 +1,33 @@
 import { blindMember, fetchBlindStatus } from "@/lib/api/member";
 import type { BlindType } from "@/lib/types";
 import { toast } from "@/components/ui/toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "./query-keys";
 
 const BLIND_LABEL: Record<BlindType, string> = {
   default: "글,댓글",
   message: "쪽지",
 };
+
+/** 회원의 블라인드 상태. enabled일 때만 요청 (작성자 메뉴를 열 때) */
+export const useBlindStatus = (
+  {
+    memberSrl,
+    docId,
+    mid,
+  }: {
+    memberSrl: string;
+    docId: string;
+    mid: string;
+  },
+  enabled: boolean,
+) =>
+  useQuery({
+    queryKey: queryKeys.blindStatus(memberSrl),
+    queryFn: () => fetchBlindStatus({ memberSrl, docId, mid }),
+    enabled: enabled && !!memberSrl,
+    staleTime: 30_000, // 바로 다시 열면 재요청 안 함
+  });
 
 export const useBlindMember = ({
   memberSrl,
