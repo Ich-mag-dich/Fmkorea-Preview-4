@@ -44,7 +44,7 @@ export default function BoardFrontPreview({ show }: { show: boolean }) {
               )}>
               <div className="overflow-hidden">
                 <div className="flex justify-center rounded-md p-2 ring-2 ring-blue-500/50 ring-inset">
-                  <div className="flex aspect-[7/4] w-3/4 items-center justify-center rounded bg-foreground/10">
+                  <div className="flex aspect-7/4 w-3/4 items-center justify-center rounded bg-foreground/10">
                     <ImageIcon className="size-8 text-foreground/25" />
                   </div>
                 </div>
