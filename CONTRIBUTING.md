@@ -14,10 +14,11 @@ bun run dev:firefox  # Firefox 개발 모드
 
 > `bun build`처럼 `run` 없이 실행하면 Bun 자체 명령어가 실행됩니다. 꼭 `bun run`을 붙여 주세요.
 
-변경을 올리기 전에 아래 세 가지가 통과해야 합니다.
+변경을 올리기 전에 아래 네 가지가 통과해야 합니다.
 
 ```bash
 bun run compile   # 타입 검사
+bun run lint      # 프로젝트 규칙 검사 (층별 책임, 캐시 키, HTML 렌더링 등. eslint.config.js)
 bun run test      # 파서 테스트 (bun run test:watch 는 저장할 때마다 다시 실행)
 bun run build     # 빌드
 ```

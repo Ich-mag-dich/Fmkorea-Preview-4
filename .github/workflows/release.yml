@@ -53,6 +53,10 @@ jobs:
       - name: Type check
         run: bun run compile
 
+      # 층별 책임, 캐시 키, HTML 렌더링 등 프로젝트 규칙 (eslint.config.js)
+      - name: Lint
+        run: bun run lint
+
       # 사이트 HTML 파서가 깨진 채로 릴리즈되지 않게
       - name: Test
         run: bun run test
