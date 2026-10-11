@@ -5,13 +5,15 @@ import CommentForm from "./CommentForm";
 
 // 베스트 댓글은 일반 위치에도 같은 id로 한 번 더 나오므로 key를 구분
 const itemKey = (comment: CommentData) =>
-  `${comment.isBest ? "best-" : ""}${comment.id}`;
+  `${comment.isBestCopy ? "best-" : ""}${comment.id}`;
 
 function CommentList({
   comments,
   commentCount,
   onVote,
   votePending = false,
+  onGoToComment,
+  goToPending = false,
   onReply,
   replyPending = false,
 }: {
@@ -19,6 +21,9 @@ function CommentList({
   commentCount: number;
   onVote?: (type: VoteType, id: string) => void;
   votePending?: boolean;
+  /** 베스트 댓글의 "댓글로 가기" (원 댓글로 이동) */
+  onGoToComment?: (id: string) => void;
+  goToPending?: boolean;
   /** 답글 등록. 성공하면 true (입력창이 닫힘) */
   onReply?: (parentSrl: string, content: string) => Promise<boolean>;
   replyPending?: boolean;
@@ -63,6 +68,10 @@ function CommentList({
                 comment={comment}
                 onVote={onVote}
                 votePending={votePending}
+                onGoToComment={
+                  onGoToComment && (() => onGoToComment(comment.id))
+                }
+                goToPending={goToPending}
                 isReplying={replyingKey === key}
                 onReply={
                   onReply

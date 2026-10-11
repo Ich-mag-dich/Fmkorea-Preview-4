@@ -40,6 +40,17 @@ export const updateComments = (
   );
 };
 
+/** 이미 받아 둔 댓글 페이지를 캐시에 넣음. 그 페이지로 넘어갈 때 같은 페이지를 다시 받지 않게 */
+export const setCommentsPage = (
+  queryClient: QueryClient,
+  href: string,
+  page: CommentsQueryData,
+) =>
+  queryClient.setQueryData<CommentsQueryData>(
+    queryKeys.commentsPage(href, page.currentPage),
+    page,
+  );
+
 /** 한 글의 게시글·댓글을 서버에서 다시 받게 함 (직접 고치기 어려운 변경 뒤) */
 export const refetchPostAndComments = (
   queryClient: QueryClient,

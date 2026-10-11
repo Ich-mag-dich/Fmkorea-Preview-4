@@ -1,6 +1,7 @@
 import { useComments } from "@/hooks/use-comments";
+import { useFindComment } from "@/hooks/use-find-comment";
 import { useVoteComment } from "@/hooks/use-vote-comment";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CommentList from "./CommentList";
 import type { CommentData } from "@/lib/types";
 import CommentPagination from "./CommentPagination";
@@ -36,8 +37,38 @@ function CommentSection({
       .then(() => true)
       .catch(() => false);
 
+  // 베스트 댓글의 "댓글로 가기". 원 댓글이 지금 페이지에 있으면 바로 스크롤하고,
+  // 다른 페이지에 있으면 그 페이지를 받아 넘긴 뒤 그려지면 스크롤
+  const listRef = useRef<HTMLDivElement>(null);
+  const findComment = useFindComment(href, docId);
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
+  const scrollToOriginal = (id: string) => {
+    // 상단 베스트 사본에는 data-comment-id가 없어서 원 댓글만 찾음
+    const el = listRef.current?.querySelector(`[data-comment-id="${id}"]`);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    return !!el;
+  };
+  const goToComment = (id: string) => {
+    if (scrollToOriginal(id)) return;
+    findComment.mutate(id, {
+      onSuccess: p => {
+        setPage(p);
+        setScrollTarget(id);
+      },
+    });
+  };
+  useEffect(() => {
+    if (scrollTarget && scrollToOriginal(scrollTarget)) setScrollTarget(null);
+  }, [scrollTarget, current.comments]);
+
   return (
-    <div className={isFetching ? "opacity-60 transition-opacity" : undefined}>
+    <div
+      ref={listRef}
+      className={
+        isFetching || findComment.isPending ?
+          "opacity-60 transition-opacity"
+        : undefined
+      }>
       <CommentList
         comments={current.comments}
         commentCount={current.commentCount}
@@ -46,6 +77,8 @@ function CommentSection({
           if (comment) vote.mutate({ comment, type });
         }}
         votePending={vote.isPending}
+        onGoToComment={goToComment}
+        goToPending={findComment.isPending}
         onReply={(parentSrl, content) => submit(content, parentSrl)}
         replyPending={insert.isPending}
       />

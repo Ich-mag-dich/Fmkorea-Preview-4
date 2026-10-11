@@ -125,6 +125,7 @@ export const parseComment = (
     comments: Array.from(items).flatMap((li): CommentData[] => {
       // 베스트 댓글은 목록 위에 id="comment_123_"처럼 끝에 _가 붙어 한 번 더 나온다
       const id = li.id?.replace("comment_", "").replace(/_$/, "") ?? "";
+      const isBestCopy = li.id.endsWith("_");
       if (!id || li.querySelector(".fdb_delete")) return [];
       const contentWrap = li.querySelector(".comment-content");
       const contentEl =
@@ -169,9 +170,10 @@ export const parseComment = (
               li.querySelector(".blamed_count")?.textContent?.trim() ?? "0",
             ) || 0,
           isReply: li.classList.contains("re"),
-          // comment_best 클래스는 일반 위치의 원본에도 붙어 있어(같은 id로 key 중복 발생)
-          // 상단 사본 구분은 id 끝의 _로 함
-          isBest: li.id.endsWith("_"),
+          // comment_best 클래스는 상단 사본과 제자리의 원본(다른 댓글 페이지에 있어도) 둘 다 붙음.
+          // 사본과 원본은 id가 같아서 사본은 id 끝의 _로 따로 구분
+          isBest: isBestCopy || li.classList.contains("comment_best"),
+          isBestCopy,
           isWriter: contentWrap?.classList.contains("document_writer") ?? false,
           // 대댓글은 style="margin-left:2%", 한 단계 깊어질 때마다 2%씩 증가
           depth: Math.round((parseFloat(li.style.marginLeft) || 0) / 2),

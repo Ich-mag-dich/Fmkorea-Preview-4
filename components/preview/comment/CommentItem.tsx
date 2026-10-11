@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import {
   ExternalLinkIcon,
+  NavigationIcon,
   ReplyIcon,
   SmileIcon,
   ThumbsDownIcon,
@@ -32,6 +33,8 @@ function CommentItem({
   comment,
   onVote,
   votePending = false,
+  onGoToComment,
+  goToPending = false,
   isReplying = false,
   onReply,
   replyForm,
@@ -40,6 +43,10 @@ function CommentItem({
   onVote?: (type: VoteType, id: string) => void;
   /** 추천 요청 중. 다시 누르면 취소되는 방식이라 연달아 누르지 못하게 막음 */
   votePending?: boolean;
+  /** 원 댓글로 이동. 상단 베스트 사본에만 버튼이 나옴 (사이트의 "댓글로 가기") */
+  onGoToComment?: () => void;
+  /** 원 댓글이 있는 페이지를 찾는 중 */
+  goToPending?: boolean;
   /** 이 댓글의 답글 입력창이 열려 있는지 */
   isReplying?: boolean;
   /** 답글 버튼 클릭 (입력창 열기/닫기) */
@@ -52,7 +59,7 @@ function CommentItem({
   return (
     <li
       // 부모 댓글 링크(a.findParent) 클릭 시 스크롤 대상. 상단 베스트 사본은 제외
-      data-comment-id={comment.isBest ? undefined : comment.id}
+      data-comment-id={comment.isBestCopy ? undefined : comment.id}
       className={cn("group relative", comment.divider && "mt-4")}
       style={{ paddingLeft: `${depth * INDENT}rem` }}>
       {/* 코드 들여쓰기처럼 depth만큼 세로선. li 사이에 간격이 없어서
@@ -108,6 +115,17 @@ function CommentItem({
 
           {/* ml-auto: 작성자 줄 오른쪽 끝으로 밀기 */}
           <div className="ml-auto flex items-center gap-1">
+            {comment.isBestCopy && onGoToComment && (
+              <Button
+                variant="ghost"
+                size="xs"
+                className="text-muted-foreground hover:text-foreground"
+                disabled={goToPending}
+                onClick={onGoToComment}>
+                <NavigationIcon />
+                댓글로 가기
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="xs"

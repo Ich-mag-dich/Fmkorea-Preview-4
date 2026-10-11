@@ -5,16 +5,27 @@ import { fetchPage, postAct, postXml, readXml } from "./request";
 import type { VoteResult } from "./types";
 import { urls, withCommentPage } from "./urls";
 
-/** 게시글의 n번째 댓글 페이지 (첫 페이지는 fetchPost에 들어 있음) */
-export const fetchComments = async (url: string, cpage: number) => {
-  const doc = await fetchPage(
-    withCommentPage(url, cpage),
-    "댓글을 불러오지 못했습니다",
-  );
+/** 댓글 페이지 문서에서 댓글 목록과 페이지 정보를 읽음 */
+const readCommentPage = (doc: Document) => {
   const { comments, commentCount } = parseComment(doc);
   const { currentPage, totalPages } = parsePagination(doc);
   return { comments, commentCount, currentPage, totalPages };
 };
+
+/** 게시글의 n번째 댓글 페이지 (첫 페이지는 fetchPost에 들어 있음) */
+export const fetchComments = async (url: string, cpage: number) =>
+  readCommentPage(
+    await fetchPage(withCommentPage(url, cpage), "댓글을 불러오지 못했습니다"),
+  );
+
+/**
+ * 댓글 하나가 들어 있는 댓글 페이지 (베스트 댓글의 "댓글로 가기"용).
+ * 몇 페이지에 있는지 몰라도 댓글 주소로 받으면 사이트가 그 페이지를 준다
+ */
+export const fetchCommentPageOf = async (docId: string, commentId: string) =>
+  readCommentPage(
+    await fetchPage(urls.comment(docId, commentId), "댓글을 찾지 못했습니다"),
+  );
 
 /**
  * 댓글 추천/비추천.

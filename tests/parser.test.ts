@@ -116,16 +116,25 @@ describe("parseComment", () => {
       loadPage("post-many-comments.html"),
     );
     expect(commentCount).toBe(2650);
-    const best = comments.filter(c => c.isBest);
+    const best = comments.filter(c => c.isBestCopy);
     expect(best).toHaveLength(4);
-    // 베스트 사본과 원본은 같은 id라 화면 key는 isBest로 나눔
+    // 베스트 사본과 원본은 같은 id라 화면 key는 isBestCopy로 나눔
     expect(comments).toHaveLength(54);
     expect(comments[0]).toMatchObject({
       id: "2464558503",
       author: "oooooooops",
       isBest: true,
+      isBestCopy: true,
       voteUp: 372,
       voteDown: 10,
+    });
+  });
+
+  test("다른 댓글 페이지에 있는 원 댓글도 베스트 (사본은 아님)", () => {
+    const { comments } = parseComment(loadPage("comment-link.html"));
+    expect(comments.find(c => c.id === "2464558503")).toMatchObject({
+      isBest: true,
+      isBestCopy: false,
     });
   });
 
@@ -172,5 +181,14 @@ describe("parsePagination", () => {
       currentPage: 1,
       totalPages: 1,
     });
+  });
+
+  // 베스트 댓글의 "댓글로 가기" 주소. 기본으로 열리는 27쪽이 아니라 원 댓글이 있는 쪽이 옴
+  test("댓글 주소로 받은 페이지는 그 댓글이 있는 페이지", () => {
+    expect(parsePagination(loadPage("comment-link.html")).currentPage).toBe(5);
+    const { comments } = parseComment(loadPage("comment-link.html"));
+    expect(comments.some(c => c.id === "2464558503" && !c.isBestCopy)).toBe(
+      true,
+    );
   });
 });

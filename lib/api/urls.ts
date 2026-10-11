@@ -30,6 +30,13 @@ export const urls = {
   /** 이미지콘 세트 정보(구매) 페이지. 사이트 댓글 이미지콘의 ✚ 아이콘이 가는 주소 */
   imageConInfo: (setSrl: string) =>
     `${BASE_URL}/imagecon?set_srl=${encodeURIComponent(setSrl)}`,
+
+  /**
+   * 댓글 하나의 주소. 사이트 베스트 댓글의 "댓글로 가기"(a.findComment)와 같은 형식.
+   * 받으면 그 댓글이 들어 있는 댓글 페이지가 옴
+   */
+  comment: (docId: string, commentId: string) =>
+    `${BASE_URL}/${docId}/${commentId}`,
 };
 
 /**

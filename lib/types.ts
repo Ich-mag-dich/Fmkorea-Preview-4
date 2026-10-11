@@ -9,7 +9,10 @@ export interface CommentData {
   voteUp: number;
   voteDown: number;
   isReply: boolean;
+  /** 베스트 댓글. 목록 위에 모아 둔 사본과 제자리의 원본 모두 true */
   isBest: boolean;
+  /** 목록 위에 모아 둔 베스트 사본. 원본과 id가 같아서 화면 key, 스크롤 대상을 나눌 때 씀 */
+  isBestCopy: boolean;
   isWriter: boolean;
   /** 대댓글 깊이. 0 = 일반 댓글, 1 = 대댓글, 2 = 대대댓글 ... */
   depth: number;
