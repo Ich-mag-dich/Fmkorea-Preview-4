@@ -116,6 +116,8 @@ export const readXml = async (
  * 사이트 페이지(게시글, 댓글 페이지 등)를 HTML 문서로 받음.
  * 에러/요청 제한 페이지를 글로 파싱하지 않도록 HTTP 실패는 예외로 바꿔
  * 미리보기 에러 화면(다시 시도)으로 보낸다.
+ * pageFetch가 아니라 기본 fetch지만 Firefox에서도 로그인한 상태의 페이지로 받아진다
+ * (게시판 이력 버튼, 승부예측 참여칸이 나오는 것으로 확인. 2026-10-12)
  */
 export const fetchPage = async (
   url: string,
