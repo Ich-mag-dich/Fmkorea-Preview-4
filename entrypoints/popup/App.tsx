@@ -21,12 +21,12 @@ const LINKS: { icon: ReactNode; label: string; href: string }[] = [
 const USAGE: { keys: string[]; action: string }[] = [
   { keys: ["우클릭"], action: "게시글 제목에서 미리보기 열기" },
   { keys: ["Shift", "우클릭"], action: "브라우저 기본 메뉴 열기" },
-  { keys: ["Esc"], action: "미리보기 닫기 (뒤로 가기도 가능)" },
+  { keys: ["Esc"], action: "미리보기 닫기 (바깥 영역 클릭도 가능)" },
 ];
 
 function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="rounded border border-b-2 bg-muted px-1.5 py-0.5 font-sans text-[11px] leading-none font-medium text-foreground">
+    <kbd className="rounded border border-b-2 bg-muted px-1.5 py-0.5 font-sans text-sm leading-none font-medium text-foreground shadow-sm">
       {children}
     </kbd>
   );
@@ -35,9 +35,7 @@ function Kbd({ children }: { children: ReactNode }) {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="px-1 text-xs font-semibold text-muted-foreground">
-        {title}
-      </h2>
+      <h2 className="px-1 text-sm font-semibold text-foreground">{title}</h2>
       {children}
     </section>
   );
@@ -52,16 +50,15 @@ function App() {
   };
 
   return (
-    <main className="flex w-80 flex-col gap-5 p-4">
+    // w-88: Chrome(Windows)에선 한글이 더 넓게 그려져 w-80이면 부제가 두 줄로 나뉨
+    <main className="flex w-88 flex-col gap-5 p-4">
       <header className="flex items-center gap-3">
-        <img src="/icon/128.png" alt="" className="size-12 rounded-lg p-2" />
+        <img src="/icon/128.png" alt="" className="size-11" />
         <div className="flex min-w-0 flex-1 flex-col">
           <h1 className="text-base leading-tight font-bold">Fmkorea Preview</h1>
-          <p className="text-sm text-muted-foreground">
-            에펨코리아 게시글 미리보기
-          </p>
+          <p className="text-foreground">에펨코리아 게시글 미리보기</p>
         </div>
-        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground tabular-nums">
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground tabular-nums">
           v{version}
         </span>
       </header>
@@ -69,16 +66,16 @@ function App() {
       <Section title="사용법">
         <ul className="flex flex-col gap-2 rounded-lg border p-3">
           {USAGE.map(({ keys, action }) => (
-            <li key={action} className="flex items-center gap-2 text-sm">
+            <li key={action} className="flex items-center gap-2">
               <span className="flex shrink-0 items-center gap-1">
                 {keys.map((key, i) => (
                   <span key={key} className="flex items-center gap-1">
-                    {i > 0 && <span className="text-muted-foreground">+</span>}
+                    {i > 0 && <span className="text-foreground">+</span>}
                     <Kbd>{key}</Kbd>
                   </span>
                 ))}
               </span>
-              <span className="text-muted-foreground">{action}</span>
+              <span className="text-foreground">{action}</span>
             </li>
           ))}
         </ul>
@@ -92,10 +89,10 @@ function App() {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0">
-                <span className="text-muted-foreground">{icon}</span>
-                <span className="flex-1">{label}</span>
-                <ChevronRightIcon className="text-muted-foreground" />
+                className="flex items-center gap-2.5 px-3 py-2.5 transition-colors hover:bg-muted [&_svg]:size-4 [&_svg]:shrink-0">
+                <span className="text-foreground">{icon}</span>
+                <span className="flex-1 font-semibold">{label}</span>
+                <ChevronRightIcon className="text-foreground" />
               </a>
             </li>
           ))}
