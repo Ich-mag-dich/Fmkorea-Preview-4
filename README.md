@@ -12,11 +12,18 @@ Chrome과 Firefox를 지원합니다.
 
 ## 미리보기
 
-![미리보기1](./images/output.webp)
+![미리보기 동작](./images/output.webp)
 
-![미리보기2](./images/ss1.png)
+| ![게시글](./images/store/ss11.png) | ![다크 모드](./images/store/darkmode.png) |
+| :--------------------------------: | :---------------------------------------: |
+|  ![댓글](./images/store/ss22.png)  |     ![팝업](./images/store/popup.jpg)     |
 
-![미리보기3](./images/ss2.png)
+<details>
+<summary>설정 페이지</summary>
+
+![설정 페이지](./images/store/options-full.png)
+
+</details>
 
 ## 사용법
 
