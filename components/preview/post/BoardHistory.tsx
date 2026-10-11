@@ -10,7 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { openInPreview } from "../open-in-preview";
 import { useBoardHistory } from "@/hooks/use-board-history";
-import type { HistoryItem, PostData } from "@/lib/types";
+import { usePreviewPost } from "@/hooks/use-preview-post";
+import type { HistoryItem } from "@/lib/types";
 
 function HistoryList({
   icon,
@@ -69,7 +70,8 @@ function HistoryList({
 }
 
 /** 작성자의 이 게시판 최근 글/댓글. 사이트의 "게시판 이력" 버튼과 같은 기능 */
-function BoardHistory({ post }: { post: PostData }) {
+function BoardHistory() {
+  const { post } = usePreviewPost();
   const [open, setOpen] = useState(false);
   const { data, isPending, isError, isFetching, refetch } = useBoardHistory(
     post,

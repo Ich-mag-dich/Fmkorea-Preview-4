@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ImageOffIcon, ShoppingBagIcon } from "lucide-react";
+import { usePreviewPost } from "@/hooks/use-preview-post";
 import { useRelatedProducts } from "@/hooks/use-related-products";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { PostData } from "@/lib/types";
 import RelatedSection from "./RelatedSection";
 
 const MARKET: Record<string, { name: string; className: string }> = {
@@ -45,7 +45,8 @@ function ProductImage({ src }: { src: string }) {
  * 핫딜 글 아래 "유사한 쿠팡/지마켓 상품".
  * 광고라서 불러오는 중이거나 실패하면 자리 없이 그냥 숨김
  */
-function RelatedProducts({ post }: { post: PostData }) {
+function RelatedProducts() {
+  const { post } = usePreviewPost();
   const { data } = useRelatedProducts(post);
 
   return (

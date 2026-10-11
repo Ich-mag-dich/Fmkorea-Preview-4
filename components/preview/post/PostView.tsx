@@ -77,7 +77,7 @@ function PostView() {
       {post.hotdeal && (
         <div className="flex flex-col gap-4 empty:hidden">
           <RelatedHotdeals items={post.hotdeal.relatedDeals} />
-          <RelatedProducts post={post} />
+          <RelatedProducts />
         </div>
       )}
 
@@ -101,7 +101,7 @@ function PostView() {
         </Button>
       </div>
 
-      <BoardHistory post={post} />
+      <BoardHistory />
     </article>
   );
 }
