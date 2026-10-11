@@ -124,7 +124,7 @@ tests/
   - 공통 규칙은 [PostView](components/preview/post/PostView.tsx)의 `contentClassName`에 하위 선택자(`[&_img]:...`)로 둡니다.
   - 특정 사이트 요소(핫딜 정보 표 등)는 [style.css](entrypoints/preview.content/style.css)의 `@layer components`에 둡니다. utilities 층이 components 층보다 우선한다는 점에 주의하세요.
 - **다크 모드** — 사이트 야간 모드 쿠키를 읽어 컨테이너에 `.dark`를 붙입니다. 색은 가능하면 테마 변수(`bg-muted`, `text-muted-foreground`, `border` 등)를 쓰고, 직접 고른 색에는 `dark:` 값을 함께 둡니다.
-- **안전** — 사이트 HTML은 반드시 `RichContent`(DOMPurify)를 거쳐 렌더링합니다. iframe은 [embed.ts](lib/embed.ts)의 허용 목록에 있는 주소만 남습니다.
+- **안전** — 사이트 HTML은 반드시 `RichContent`(DOMPurify)를 거쳐 렌더링합니다. iframe은 [embed.ts](lib/embed.ts)의 허용 목록에 있는 주소만 남습니다. 본문·댓글의 링크는 이때 모두 새 탭으로 열리게 바뀝니다(미리보기를 연 탭이 이동하지 않게).
 
 ## 코드 스타일
 
@@ -143,6 +143,7 @@ tests/
 - `parser.test.ts` — 게시글·댓글·페이지 파싱, 본문 정리, 핫딜
 - `prediction-poll.test.ts` — 승부예측 파싱과 참여 결과 반영
 - `links.test.ts` — 글 주소 처리, 우클릭한 링크 판별
+- `sanitize.test.ts` — 본문·댓글 링크를 새 탭으로 여는 처리
 
 파서를 바꾸면 테스트도 같이 고치거나 추가합니다. 새 페이지가 필요하면 [tests/fixtures/README.md](tests/fixtures/README.md)의 방법대로 저장하고, 커밋 전에 `bun run fixtures:sanitize`로 개인 정보를 지웁니다.
 
