@@ -64,8 +64,6 @@ export const fixIconUrl = (src: string | null | undefined): string => {
   return src;
 };
 
-const COMMENTS_PER_PAGE = 100;
-
 export const parseCommentCount = (doc: Document): number => {
   const count =
     Array.from(doc.querySelectorAll("div.side.fr span b"))
@@ -73,6 +71,9 @@ export const parseCommentCount = (doc: Document): number => {
       ?.textContent?.trim() ?? "0";
   return parseInt(count.replace(/,/g, "")) || 0;
 };
+
+// 사이트는 댓글을 한 페이지에 100개씩 보여 줌 (2026-10-12 확인, post-many-comments.html: 댓글 2650개 → 27페이지)
+const COMMENTS_PER_PAGE = 100;
 
 export const parsePagination = (
   doc: Document,
@@ -98,8 +99,11 @@ export const parsePagination = (
     .map(a => parseInt(a.textContent?.trim() ?? ""))
     .filter(n => !isNaN(n) && n > 0);
 
+  // 페이지 링크는 번호를 10개씩만 보여 주고 "끝 페이지" 링크에는 번호가 없어서,
+  // 앞쪽 페이지에서는 링크만으로 마지막 페이지를 알 수 없음. 그래서 댓글 수로도 계산함
   const byCount = Math.ceil(parseCommentCount(doc) / COMMENTS_PER_PAGE);
 
+  // 현재 페이지는 링크가 아니라 <strong>이라 nums에 없음
   const totalPages = Math.max(byCount, ...nums, currentPage);
 
   return { currentPage, totalPages };
