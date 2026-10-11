@@ -166,6 +166,19 @@ describe("parseComment", () => {
     // 게시글 저장 시점, 댓글 4개 모두 이미지콘
     expect(comments.every(c => c.setSrl !== undefined)).toBe(true);
   });
+
+  test("댓글 추천/비추천 확인", () => {
+    // 추천한 댓글의 id는 10437596131 이고, 비추천한 댓글의 id는 10437591109
+    const { comments } = parseComment(loadPage("my-vote.html"));
+    expect(comments.find(c => c.id === "10437596131")?.myVote).toEqual("up");
+    expect(comments.find(c => c.id === "10437591109")?.myVote).toEqual("down");
+    // 나머지 댓글은 추천/비추천 안 함
+    expect(
+      comments
+        .filter(c => !["10437596131", "10437591109"].includes(c.id))
+        .every(c => c.myVote === null),
+    ).toBe(true);
+  });
 });
 
 describe("parsePagination", () => {

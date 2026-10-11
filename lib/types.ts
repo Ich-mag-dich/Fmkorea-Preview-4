@@ -22,6 +22,9 @@ export interface CommentData {
 
   /** 이미지콘일 경우 자식 요소에 <img class="imagecon" data-set-srl="..." /> 형태로 이미지콘 세트의 srl이 있음 */
   setSrl?: string;
+
+  /** 댓글에 추천/비추천 하면 <span class="vote ui_font my_vote_down"> 또는 <span class="vote ui_font my_vote_up">가 붙음 */
+  myVote: VoteType | null;
 }
 
 export interface PostData {

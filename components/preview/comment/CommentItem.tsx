@@ -145,7 +145,9 @@ function CommentItem({
               className="text-muted-foreground hover:text-blue-600"
               disabled={!onVote || votePending}
               onClick={() => onVote?.("up", comment.id)}>
-              <ThumbsUpIcon />
+              <ThumbsUpIcon
+                className={cn(comment.myVote === "up" && "text-blue-600")}
+              />
               {comment.voteUp}
             </Button>
             <Button
@@ -154,7 +156,9 @@ function CommentItem({
               className="text-muted-foreground hover:text-red-600"
               disabled={!onVote || votePending}
               onClick={() => onVote?.("down", comment.id)}>
-              <ThumbsDownIcon />
+              <ThumbsDownIcon
+                className={cn(comment.myVote === "down" && "text-red-600")}
+              />
               {comment.voteDown}
             </Button>
           </div>

@@ -9,6 +9,7 @@ import type {
   HistoryItem,
   PostData,
   RelatedHotdeal,
+  VoteType,
 } from "./types";
 
 /**
@@ -151,6 +152,9 @@ export const parseComment = (
         /^member_\d+$/.test(c),
       );
       const memberSrl = memberClass?.replace("member_", "") ?? "";
+      let myVote: VoteType | null = null;
+      if (li.querySelector(".vote.my_vote_up")) myVote = "up";
+      else if (li.querySelector(".vote.my_vote_down")) myVote = "down";
 
       return [
         {
@@ -179,6 +183,7 @@ export const parseComment = (
           depth: Math.round((parseFloat(li.style.marginLeft) || 0) / 2),
           divider: li.classList.contains("comment_border"),
           setSrl,
+          myVote,
         },
       ];
     }),

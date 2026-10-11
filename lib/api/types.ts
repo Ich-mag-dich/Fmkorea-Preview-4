@@ -8,10 +8,11 @@
 
 /** 게시글·댓글 추천/비추천 응답 (?act=procDocumentVoteUp 등) */
 export type VoteResult = {
-  // 아래 셋은 성공했을 때만 옴
+  // 댓글은 요청 뒤 내 상태 (1 추천, -1 비추천, 0 안 함). 쿨다운으로 실패해도 옴
   my_vote?: number;
+  // 아래 셋은 성공했을 때만 옴
   voted_blamed_count?: number; // 게시글 추천시
-  voted_count?: number; // 댓글 추천/추천 취소시 (비추천 응답엔 개수가 없음)
+  voted_count?: number; // 댓글 추천 개수가 바뀔 때 (추천, 추천 취소, 추천↔비추천 전환). 비추천 개수는 없음
   point?: number;
   error: number;
   message: string;
