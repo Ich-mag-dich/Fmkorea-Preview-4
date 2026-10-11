@@ -8,6 +8,7 @@ import CommentPagination from "./CommentPagination";
 import CommentForm from "./CommentForm";
 import { useInsertComment } from "@/hooks/use-insert-comment";
 import { usePreviewPost } from "@/hooks/use-preview-post";
+import { scrollIntoViewSettled } from "@/lib/scroll";
 
 function CommentSection({
   initial,
@@ -26,8 +27,14 @@ function CommentSection({
   const { mid, docId } = post;
   const [page, setPage] = useState(initial.currentPage);
   const isInitialPage = page === initial.currentPage;
-  const { data, isFetching } = useComments(href, page, !isInitialPage);
+  const { data, isFetching, isPlaceholderData } = useComments(
+    href,
+    page,
+    !isInitialPage,
+  );
   const current = isInitialPage ? initial : (data ?? initial);
+  // 받는 동안엔 이전 페이지(placeholder)를 보여 주므로, 지금 페이지가 실제로 그려졌는지
+  const pageReady = isInitialPage || (data !== undefined && !isPlaceholderData);
   const vote = useVoteComment(href);
   const insert = useInsertComment({ href, mid, docId });
   // 에러 토스트는 훅에서 띄우고, 실패하면 false를 돌려줘서 입력 내용은 남겨둠
@@ -45,7 +52,7 @@ function CommentSection({
   const scrollToOriginal = (id: string) => {
     // 상단 베스트 사본에는 data-comment-id가 없어서 원 댓글만 찾음
     const el = listRef.current?.querySelector(`[data-comment-id="${id}"]`);
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (el) scrollIntoViewSettled(el, "center");
     return !!el;
   };
   const goToComment = (id: string) => {
@@ -60,6 +67,16 @@ function CommentSection({
   useEffect(() => {
     if (scrollTarget && scrollToOriginal(scrollTarget)) setScrollTarget(null);
   }, [scrollTarget, current.comments]);
+
+  // 페이지 번호를 누르면 새 페이지가 그려진 뒤에 댓글 맨 위로 스크롤.
+  // 누르자마자 스크롤하면 이전 페이지 높이로 계산한 위치로 가다가, 새 페이지로 바뀌며
+  // 내용이 줄어들 때 Firefox가 스크롤을 끊어 엉뚱한 곳(맨 위·맨 아래)에서 멈춤
+  const [pageScrollPending, setPageScrollPending] = useState(false);
+  useEffect(() => {
+    if (!pageScrollPending || !pageReady) return;
+    setPageScrollPending(false);
+    onPageChange?.();
+  }, [pageScrollPending, pageReady, current]);
 
   return (
     <div
@@ -87,7 +104,7 @@ function CommentSection({
         totalPages={current.totalPages}
         onChange={p => {
           setPage(p);
-          onPageChange?.();
+          setPageScrollPending(true);
         }}
       />
       <CommentForm

@@ -2,6 +2,7 @@ import { useState, type MouseEvent } from "react";
 import type { CommentData, VoteType } from "@/lib/types";
 import CommentItem from "./CommentItem";
 import CommentForm from "./CommentForm";
+import { scrollIntoViewSettled } from "@/lib/scroll";
 
 // 베스트 댓글은 일반 위치에도 같은 id로 한 번 더 나오므로 key를 구분
 const itemKey = (comment: CommentData) =>
@@ -41,9 +42,8 @@ function CommentList({
     e.preventDefault();
     const id = link.getAttribute("href")?.match(/#comment_(\d+)/)?.[1];
     if (!id) return;
-    e.currentTarget
-      .querySelector(`[data-comment-id="${id}"]`)
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const target = e.currentTarget.querySelector(`[data-comment-id="${id}"]`);
+    if (target) scrollIntoViewSettled(target, "center");
   };
 
   return (

@@ -3,6 +3,7 @@ import { usePortalContainer } from "@/hooks/use-portal-container";
 import { usePost } from "@/hooks/use-post";
 import { PreviewPostContext } from "@/hooks/use-preview-post";
 import { useStorageItem } from "@/hooks/use-storage-item";
+import { scrollIntoViewSettled } from "@/lib/scroll";
 import { previewWidthItem } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import {
@@ -54,7 +55,7 @@ function PreviewModal({
     viewport?.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
   };
   const scrollToComments = () =>
-    commentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    commentsRef.current && scrollIntoViewSettled(commentsRef.current, "start");
 
   // 닫을 때는 스크롤한 위치에서 닫히므로, 지금 화면 가운데를 기준점으로 맞춰서 제자리에서 작아지게.
   // useLayoutEffect: 닫힘 애니메이션이 시작되기 전에 넣어야 함
