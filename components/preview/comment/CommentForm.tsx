@@ -59,7 +59,7 @@ function CommentForm({
         e.preventDefault();
         submit();
       }}>
-      <p className="text-md font-semibold text-slate-900 dark:text-slate-100">
+      <p className="font-semibold text-slate-900 dark:text-slate-100">
         {title}
       </p>
       <div className="flex flex-row gap-2">

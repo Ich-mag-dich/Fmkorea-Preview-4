@@ -3,20 +3,13 @@ import {
   BugIcon,
   ChevronRightIcon,
   CodeIcon,
-  ExternalLinkIcon,
   SettingsIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { urls } from "@/lib/api/urls";
 
 const REPO_URL = "https://github.com/Ich-mag-dich/Fmkorea-Preview-4";
 
-export const LINKS: { icon: ReactNode; label: string; href: string }[] = [
-  // {
-  //   icon: <ExternalLinkIcon />,
-  //   label: "에펨코리아 열기",
-  //   href: urls.BASE_URL,
-  // },
+const LINKS: { icon: ReactNode; label: string; href: string }[] = [
   { icon: <CodeIcon />, label: "GitHub 저장소", href: REPO_URL },
   {
     icon: <BugIcon />,
@@ -39,13 +32,7 @@ function Kbd({ children }: { children: ReactNode }) {
   );
 }
 
-export function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
       <h2 className="px-1 text-xs font-semibold text-muted-foreground">
@@ -85,7 +72,7 @@ function App() {
             <li key={action} className="flex items-center gap-2 text-sm">
               <span className="flex shrink-0 items-center gap-1">
                 {keys.map((key, i) => (
-                  <span key={key} className="text-md flex items-center gap-1">
+                  <span key={key} className="flex items-center gap-1">
                     {i > 0 && <span className="text-muted-foreground">+</span>}
                     <Kbd>{key}</Kbd>
                   </span>
