@@ -42,7 +42,10 @@ function PreviewRemote({
   return (
     // 넓은 화면(xl)에선 창 오른쪽 바깥, 좁으면 창 안쪽 오른쪽 가장자리 (바깥에 두면 가로 스크롤 생김)
     <div className="pointer-events-none absolute inset-y-0 right-3 flex flex-col justify-end py-6 xl:right-auto xl:left-full xl:ml-4">
-      <div className="pointer-events-auto sticky bottom-8 flex flex-col gap-2">
+      {/* 창 바깥(xl)에 있을 땐 버튼을 살짝 빗나가 누르면 배경 클릭이 돼서 미리보기가 닫힘.
+          둘레 1rem에 보이지 않는 영역(::before)을 깔아 창 안 클릭으로 받음. 왼쪽 1rem은 창과의 간격(ml-4)과 같아서
+          창 가장자리까지 이어짐. -z-10: sticky라 생기는 쌓임 맥락 안에서 버튼 아래에 깔려 버튼 클릭은 그대로 */}
+      <div className="pointer-events-auto sticky bottom-8 flex flex-col gap-2 xl:before:absolute xl:before:-inset-4 xl:before:-z-10">
         <RemoteButton label="맨 위로" onClick={onTop}>
           <ArrowUpIcon />
         </RemoteButton>
