@@ -23,6 +23,8 @@ bun run test      # 파서 테스트 (bun run test:watch 는 저장할 때마다
 bun run build     # 빌드
 ```
 
+main에 push하거나 PR을 올리면 GitHub Actions의 **CI** 워크플로([ci.yml](.github/workflows/ci.yml))가 같은 네 가지를 다시 돌립니다.
+
 ## 전체 흐름
 
 미리보기 하나가 열리는 과정입니다. 코드를 처음 읽을 때 이 순서대로 따라가면 됩니다.
