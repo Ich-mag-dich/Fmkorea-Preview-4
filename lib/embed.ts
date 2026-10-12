@@ -263,7 +263,10 @@ export const prepareEmbeds = (root: Element): void => {
         seen.add(info.key);
         iframe.replaceWith(placeholder(doc, info.url));
       }
-    } else if (!isAllowedIframeSrc(full)) {
+    } else if (isAllowedIframeSrc(full)) {
+      // //로 시작하는 주소를 그대로 두면 sanitize가 주소로 읽지 못해 iframe을 지움
+      iframe.setAttribute("src", full);
+    } else {
       iframe.replaceWith(externalLink(doc, full, "삽입된 콘텐츠 열기"));
     }
   });

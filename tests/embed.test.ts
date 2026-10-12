@@ -214,6 +214,15 @@ describe("prepareEmbeds", () => {
     expect(root.querySelector("iframe")?.getAttribute("src")).toBe(src);
   });
 
+  test("//로 시작하는 iframe은 https:를 붙여 남김 (그대로 두면 sanitize가 지움)", () => {
+    const root = prepared(
+      '<iframe src="//player.vimeo.com/video/76979871"></iframe>',
+    );
+    const src = root.querySelector("iframe")?.getAttribute("src") ?? "";
+    expect(src).toBe("https://player.vimeo.com/video/76979871");
+    expect(isAllowedIframeSrc(src)).toBe(true);
+  });
+
   test("허용하지 않은 iframe은 새 탭 링크로", () => {
     const root = prepared('<iframe src="https://example.com/widget"></iframe>');
     expect(root.querySelector("iframe")).toBeNull();
