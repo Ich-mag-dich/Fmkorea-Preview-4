@@ -5,6 +5,7 @@
  * 사이트가 실제로 보내는 요청(주소, 헤더, 본문 순서)을 확인하고 그대로 맞추는 게 원칙이다.
  * 자주 쓰는 형식은 아래 함수로 묶어 두었다.
  */
+import { devLog } from "@/lib/log";
 import { urls } from "./urls";
 
 /**
@@ -124,6 +125,7 @@ export const fetchPage = async (
   failMessage: string,
   { referrer }: RequestOptions = {},
 ): Promise<Document> => {
+  devLog("페이지 요청:", url);
   const res = await fetch(url, { referrer });
   if (!res.ok) throw new Error(`${failMessage} (${res.status})`);
   return new DOMParser().parseFromString(await res.text(), "text/html");
