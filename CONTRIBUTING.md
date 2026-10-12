@@ -143,6 +143,7 @@ tests/
 - `parser.test.ts` — 게시글·댓글·페이지 파싱, 본문 정리, 핫딜
 - `prediction-poll.test.ts` — 승부예측 파싱과 참여 결과 반영
 - `links.test.ts` — 글 주소 처리, 우클릭한 링크 판별
+- `embed.test.ts` — 링크 → 영상/SNS 임베드 판별, iframe 허용 목록, 본문 임베드 자리표시자
 - `sanitize.test.ts` — 본문·댓글 링크를 새 탭으로 여는 처리
 
 파서를 바꾸면 테스트도 같이 고치거나 추가합니다. 새 페이지가 필요하면 [tests/fixtures/README.md](tests/fixtures/README.md)의 방법대로 저장하고, 커밋 전에 `bun run fixtures:sanitize`로 개인 정보를 지웁니다.
